@@ -137,9 +137,9 @@ public class GameClient implements ClientProtocol {
 
 	@Override
 	public void handleHello() throws ServerUnavailableException, ProtocolException {
-        sendMessage(ProtocolMessages.HELLO+ProtocolMessages.DELIMITER+playerName);
+        sendMessage(ProtocolMessages.HANDSHAKE+ProtocolMessages.DELIMITER+playerName);
         String response = readLineFromServer();
-        if (response.equals(ProtocolMessages.HELLO)) {
+        if (response.equals(ProtocolMessages.HANDSHAKE)) {
 			view.showMessage("Welcome to the battleship game!");
 		} else {
 			throw new ProtocolException("ERROR: Bad handshake.");
