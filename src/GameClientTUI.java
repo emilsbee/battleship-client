@@ -12,7 +12,6 @@ public class GameClientTUI {
     public void start() throws ServerUnavailableException {
         boolean runs = true;
         while (runs) {
-            showMessage("Enter command: ");
             String input = in.nextLine();
             try {
                 handleUserInput(input);
@@ -23,6 +22,22 @@ public class GameClientTUI {
             }
         }
     }
+
+    public int getInt(String question) {
+		System.out.print(question);
+		while(true){
+			try {
+				return Integer.parseInt(in.next());
+			} catch(NumberFormatException ne) {
+				System.out.print("That's not a valid number.\n"+question);
+			}
+		}
+    }
+
+    public String getString(String question) {
+		System.out.print(question);
+		return in.nextLine();
+	}
 
     public void showMessage(String message) {
 		System.out.println(message);

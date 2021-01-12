@@ -10,18 +10,22 @@ public class GameClient implements ClientProtocol {
     private Socket socket;
     private BufferedReader in;
     private BufferedWriter out;
-    private GameClientTUI view;
+	private GameClientTUI view;
+	private String playerName;
 
     public GameClient() {
         this.view = new GameClientTUI(this);
     }
     public static void main(String[] args) throws ServerUnavailableException, ProtocolException {
+		System.out.println("Welcome to the battleship game!");
         (new GameClient()).start();
     }
 
     public void start() throws ServerUnavailableException, ProtocolException {
         try {
-            createConnection();
+			playerName = view.getString("Enter your player name, try to make it unique: ");
+			int port = view.getInt("Enter server port: ");
+            createConnection(port);
             handleHello();
             view.start();
         } catch (ExitProgram e) {
@@ -39,11 +43,10 @@ public class GameClient implements ClientProtocol {
 	 * 
 	 * @throws ExitProgram if a connection is not established and the user indicates to want to exit the program.
 	 */
-	public void createConnection() throws ExitProgram {
+	public void createConnection(int port) throws ExitProgram {
 		clearConnection();
 		while (socket == null) {
 			String host = "127.0.0.1";
-			int port = 8888;
 
 			// try to open a Socket to the server
 			try {
@@ -134,25 +137,13 @@ public class GameClient implements ClientProtocol {
 
 	@Override
 	public void handleHello() throws ServerUnavailableException, ProtocolException {
-        sendMessage(ProtocolMessages.HELLO+ProtocolMessages.DELIMITER+"player1");
+        sendMessage(ProtocolMessages.HELLO+ProtocolMessages.DELIMITER+playerName);
         String response = readLineFromServer();
         if (response.equals(ProtocolMessages.HELLO)) {
-			view.showMessage("Welcome to the battleship game server!");
+			view.showMessage("Welcome to the battleship game!");
 		} else {
 			throw new ProtocolException("ERROR: Bad handshake.");
 		}
-	}
-
-	@Override
-	public GameBoard gameSetup(String[][] board, boolean isTurn) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public boolean move(int x, int y) {
-		// TODO Auto-generated method stub
-		return false;
 	}
 
 	@Override
@@ -171,4 +162,24 @@ public class GameClient implements ClientProtocol {
     public void sendExit() {
         // Stub
     }
+	@Override
+	public String enemyName(String playerName) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public void clientBoard(String[][] board) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public String gameSetup() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public void move(int x, int y) {
+		// TODO Auto-generated method stub
+		
+	}
 }
