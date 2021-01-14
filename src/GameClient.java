@@ -20,9 +20,12 @@ public class GameClient implements ClientProtocol {
 	// The user entered player name
 	private String playerName;
 
+	// Game board
+	private GameBoard board;
 
     public GameClient() {
-        this.view = new GameClientTUI(this);
+		this.view = new GameClientTUI(this);
+		board = new GameBoard();
     }
 	
 	public static void main(String[] args) throws ServerUnavailableException, ProtocolException {
@@ -38,7 +41,7 @@ public class GameClient implements ClientProtocol {
 	 * @param message the message to write to the OutputStream.
 	 * @throws ServerUnavailableException if IO errors occur.
 	 */
-	public synchronized void sendMessage(String message) throws ServerUnavailableException {
+	public void sendMessage(String message) throws ServerUnavailableException {
 		if (out != null) {
             try {
 				out.write(message);
@@ -59,18 +62,18 @@ public class GameClient implements ClientProtocol {
 			int port = view.getInt("Enter server port: ");
 			createConnection(port);
 			handleHello();
+			board.generateBoard();
 			start();
 		} catch (ExitProgram e) {
 			closeConnection();
 		} 
 	}
 
-	
+
 	/**
-	 * Continuously listens to client input and forwards the input to the
+	 * Continuously listens to server input and forwards the input to the
 	 * {@link #handleCommand(String)} method.
 	 */
-	// @Override
 	public void start() {
 		
         String input;
