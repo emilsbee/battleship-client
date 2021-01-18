@@ -47,7 +47,7 @@ public class GameBoard implements Serializable {
         placeShip(GameBoard.DESTROYER, newBoard);
         placeShip(GameBoard.SUPER_PATROL, newBoard);
         placeShip(GameBoard.PATROL_BOAT, newBoard);
-
+        printBoard(newBoard);
         setBoard(newBoard);
     }
 
@@ -141,38 +141,27 @@ public class GameBoard implements Serializable {
             if (i == 0) {
                 System.out.print("      "); // Left margin
                 for (int j = 0; j < 15; j++) {
-                    System.out.print(" ");
-                    System.out.print(" ");
+                    printBoardLine("space", 2);
                     System.out.print(alphabet[j].toUpperCase());
-                    System.out.print(" ");
-                    System.out.print(" ");
-                    System.out.print(" ");
+                    printBoardLine("space", 3);
                 }
                 System.out.println(" "); // New line
                 for (int j = 0; j < 15; j++) {
-                    System.out.print(" ");
-                    System.out.print(" ");
-                    System.out.print(" ");
-                    System.out.print(" ");
-                    System.out.print(" ");
+                    printBoardLine("space", 5);
                 }
             }
             /* ALPHABET AT THE TOP */
             
 
             /* New line */
-            System.out.println(" "); 
+            System.out.println(" ");
             /* New line */
 
             System.out.print("      "); 
             for (int j = 0; j < 15; j++) { 
-                System.out.print(TerminalColors.BLUE_BACKGROUND + " "+ TerminalColors.RESET);
-                System.out.print(TerminalColors.BLUE_BACKGROUND + " "+ TerminalColors.RESET);
-                System.out.print(TerminalColors.BLUE_BACKGROUND +" "+ TerminalColors.RESET);
-                System.out.print(TerminalColors.BLUE_BACKGROUND + " "+ TerminalColors.RESET);
-                System.out.print(TerminalColors.BLUE_BACKGROUND + " "+ TerminalColors.RESET);
+                printBoardLine("blue", 5);
                 if (j != 14) {   
-                    System.out.print(TerminalColors.BLUE_BACKGROUND + " "+ TerminalColors.RESET);
+                    printBoardLine("blue", 1);
                 }
             }
 
@@ -184,33 +173,22 @@ public class GameBoard implements Serializable {
             for (int j = 0; j < 15; j++) {
                 if (j == 0) {
                     System.out.print("  ");
-                    System.out.print(" ");
-                    System.out.print(" ");
-                    System.out.print(" ");
-                    System.out.print(" ");
+                    printBoardLine("space", 4);
                 }
                 if (board[j][i].equals("WATER")) {
-                    System.out.print(TerminalColors.BLUE_BACKGROUND + " "+ TerminalColors.RESET);
-                    System.out.print(TerminalColors.BLUE_BACKGROUND + " "+ TerminalColors.RESET);
-                    System.out.print(TerminalColors.BLUE_BACKGROUND +" "+ TerminalColors.RESET);
-                    System.out.print(TerminalColors.BLUE_BACKGROUND + " "+ TerminalColors.RESET);
-                    System.out.print(TerminalColors.BLUE_BACKGROUND + " "+ TerminalColors.RESET);
+                    printBoardLine("blue", 5);
                     if (j != 14) {   
-                        System.out.print(TerminalColors.BLUE_BACKGROUND + " "+ TerminalColors.RESET);
+                        printBoardLine("blue", 1);
                     }
 
                 } else {
-                    System.out.print(TerminalColors.WHITE_BACKGROUND + " "+ TerminalColors.RESET);
-                    System.out.print(TerminalColors.WHITE_BACKGROUND + " "+ TerminalColors.RESET);
-                    System.out.print(TerminalColors.WHITE_BACKGROUND + " "+ TerminalColors.RESET);
-                    System.out.print(TerminalColors.WHITE_BACKGROUND + " "+ TerminalColors.RESET);
-                    System.out.print(TerminalColors.WHITE_BACKGROUND + " "+ TerminalColors.RESET);
+                    printBoardLine("white", 5);
                     if (isShipEnd(j, i)) {
                         if (j != 14) {   
-                            System.out.print(TerminalColors.BLUE_BACKGROUND + " "+ TerminalColors.RESET);
+                            printBoardLine("blue", 1);
                         }
                     } else {
-                        System.out.print(TerminalColors.WHITE_BACKGROUND + " "+ TerminalColors.RESET);
+                        printBoardLine("white", 1);
                     }
                 }
             }
@@ -228,43 +206,34 @@ public class GameBoard implements Serializable {
                 /* Number on the left */
                 if (j == 0) {
                     if (i+1 == 10) {
-                        System.out.print(" ");
-                        System.out.print(" ");
+                        printBoardLine("space", 2);
                         System.out.print(String.valueOf(i+1).toUpperCase());
-                        System.out.print(" ");
-                        System.out.print(" ");
+                        printBoardLine("space", 2);
                     } else {
                         String toPrint = String.valueOf(i+1) + "  "; // This is necessary because every number besides ten takes up one space so it needs to be equaled out
-                        System.out.print(" ");
-                        System.out.print(" ");
+                        printBoardLine("space", 2);
                         System.out.print(toPrint.toUpperCase());
-                        System.out.print(" ");
+                        printBoardLine("space", 1);
                     }
                 }
                 /* Number on the left */
                 
                 /* Actual letter printing W for water and S for ship */
                 if (board[j][i].equals("WATER")) {
-                    System.out.print(TerminalColors.BLUE_BACKGROUND + " "+ TerminalColors.RESET);
-                    System.out.print(TerminalColors.BLUE_BACKGROUND + " "+ TerminalColors.RESET);
-                    System.out.print(TerminalColors.BLUE_BACKGROUND + " " + TerminalColors.RESET);
-                    System.out.print(TerminalColors.BLUE_BACKGROUND + " "+ TerminalColors.RESET);
-                    System.out.print(TerminalColors.BLUE_BACKGROUND + " "+ TerminalColors.RESET);
+                    printBoardLine("blue", 5);
                     if (j != 14) {   
-                        System.out.print(TerminalColors.BLUE_BACKGROUND + " "+ TerminalColors.RESET);
+                        printBoardLine("blue", 1);
                     }
                 } else {
-                    System.out.print(TerminalColors.WHITE_BACKGROUND + " "+ TerminalColors.RESET);
-                    System.out.print(TerminalColors.WHITE_BACKGROUND + " "+ TerminalColors.RESET);
-                    System.out.print(TerminalColors.BLACK_FONT_WHITE_BACKGROUND + "S" + TerminalColors.RESET);
-                    System.out.print(TerminalColors.WHITE_BACKGROUND + " "+ TerminalColors.RESET);
-                    System.out.print(TerminalColors.WHITE_BACKGROUND + " "+ TerminalColors.RESET);
+                    printBoardLine("white", 2);
+                    printBoardLine("ship", 1);
+                    printBoardLine("white", 2);
                     if (isShipEnd(j, i)) {
                         if (j != 14) {   
-                            System.out.print(TerminalColors.BLUE_BACKGROUND + " "+ TerminalColors.RESET);
+                            printBoardLine("blue", 1);
                         }
                     } else {
-                        System.out.print(TerminalColors.WHITE_BACKGROUND + " "+ TerminalColors.RESET);
+                        printBoardLine("white", 1);
                     }
                 }
                 /* Actual letter printing W for water and S for ship */
@@ -279,33 +248,22 @@ public class GameBoard implements Serializable {
             for (int j = 0; j < 15; j++) {
                 if (j == 0) {
                     System.out.print("  ");
-                    System.out.print(" ");
-                    System.out.print(" ");
-                    System.out.print(" ");
-                    System.out.print(" ");
+                    printBoardLine("space", 4);
                 }
                 if (board[j][i].equals("WATER")) {
-                    System.out.print(TerminalColors.BLUE_BACKGROUND + " "+ TerminalColors.RESET);
-                    System.out.print(TerminalColors.BLUE_BACKGROUND + " "+ TerminalColors.RESET);
-                    System.out.print(TerminalColors.BLUE_BACKGROUND +" "+ TerminalColors.RESET);
-                    System.out.print(TerminalColors.BLUE_BACKGROUND + " "+ TerminalColors.RESET);
-                    System.out.print(TerminalColors.BLUE_BACKGROUND + " "+ TerminalColors.RESET);
+                    printBoardLine("blue", 5);
                     if (j != 14) {   
-                        System.out.print(TerminalColors.BLUE_BACKGROUND + " "+ TerminalColors.RESET);
+                        printBoardLine("blue", 1);
                     }
 
                 } else {
-                    System.out.print(TerminalColors.WHITE_BACKGROUND + " "+ TerminalColors.RESET);
-                    System.out.print(TerminalColors.WHITE_BACKGROUND + " "+ TerminalColors.RESET);
-                    System.out.print(TerminalColors.WHITE_BACKGROUND + " "+ TerminalColors.RESET);
-                    System.out.print(TerminalColors.WHITE_BACKGROUND + " "+ TerminalColors.RESET);
-                    System.out.print(TerminalColors.WHITE_BACKGROUND + " "+ TerminalColors.RESET);
+                    printBoardLine("white", 5);
                     if (isShipEnd(j, i)) {
                         if (j != 14) {   
-                            System.out.print(TerminalColors.BLUE_BACKGROUND + " "+ TerminalColors.RESET);
+                            printBoardLine("blue", 1);
                         }
                     } else {
-                        System.out.print(TerminalColors.WHITE_BACKGROUND + " "+ TerminalColors.RESET);
+                         printBoardLine("white", 1);
                     }
                 }
             }
@@ -316,7 +274,30 @@ public class GameBoard implements Serializable {
         System.out.println(" "); 
         /* New line */
     }
-
-   
+    /**
+     * Print different kinds of lines of the board
+     * @param code The code given as a parameter to see what kind of line it needs to be
+     * @param amount the amount of times it needs to be printed
+     */
+    public void printBoardLine(String code, int amount){
+        for(int i = 0; i < amount; i++){
+            if(code.equals("blue")){
+                System.out.print(TerminalColors.BLUE_BACKGROUND + " "+ TerminalColors.RESET);
+            }
+            else if(code.equals("white")) {
+                System.out.print(TerminalColors.WHITE_BACKGROUND + " "+ TerminalColors.RESET);
+            }
+            else if(code.equals("ship")) {
+                System.out.print(TerminalColors.BLACK_FONT_WHITE_BACKGROUND + "S" + TerminalColors.RESET);
+            }
+            else if(code.equals("space")){
+                System.out.print(" ");
+            }
+            //else if(color.equals("red")) {
+            //  System.out.print(TerminalColors.RED_BACKGROUND + " "+ TerminalColors.RESET);
+            //}
+       }
+    }
 }
+
 
