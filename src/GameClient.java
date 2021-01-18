@@ -29,7 +29,7 @@ public class GameClient implements ClientProtocol {
 
     public GameClient() {
 		this.view = new GameClientTUI(this);
-		board = new GameBoard();
+		board = new GameBoard(false);
     }
 	
 	public static void main(String[] args) throws ServerUnavailableException, ProtocolException, ClassNotFoundException {
@@ -47,7 +47,7 @@ public class GameClient implements ClientProtocol {
 	 */
 	public void sendMessage(String message) throws ServerUnavailableException {
 		if (out != null) {
-            try {
+			try {
 				out.writeUTF(message);
                 out.flush();
             } catch (IOException e) {
@@ -79,7 +79,6 @@ public class GameClient implements ClientProtocol {
 			playerName = view.getString("Enter your player name, try to make it unique: ");
 			int port = view.getInt("Enter server port: ");
 			createConnection(port);
-			view.showMessage("HERE");
 			handleHello();
 			start();
 		} catch (ExitProgram e) {
@@ -116,6 +115,7 @@ public class GameClient implements ClientProtocol {
 			view.showMessage("Enemy: " + input.split(";")[1]);
 			sendMessage(ProtocolMessages.CLIENTBOARD);
 			sendBoard();
+			sendMessage("NEW message");
 		}
 		
 		if (!input.isEmpty()) {
@@ -187,7 +187,6 @@ public class GameClient implements ClientProtocol {
 				socket = new Socket(addr, port);
 				out = new ObjectOutputStream(socket.getOutputStream());
 				in = new ObjectInputStream(socket.getInputStream());
-				view.showMessage("CREATE CONNET");
 			} catch (IOException e) {
 				view.showMessage("ERROR: could not create a socket on " + host + " and port " + port + ".");
 				throw new ExitProgram("User indicated to exit.");

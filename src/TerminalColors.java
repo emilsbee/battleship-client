@@ -1,6 +1,8 @@
 public class TerminalColors {
     // Reset
     public static final String RESET = "\033[0m"; // Text Reset
+    // Special combos 1000
+    public static final String BLACK_FONT_WHITE_BACKGROUND = "\033[0;30m\033[47m";
     // Regular Colors
     public static final String BLACK = "\033[0;30m"; // BLACK
     public static final String RED = "\033[0;31m"; // RED
@@ -37,7 +39,6 @@ public class TerminalColors {
     public static final String PURPLE_BACKGROUND = "\033[45m"; // PURPLE
     public static final String CYAN_BACKGROUND = "\033[46m"; // CYAN
     public static final String WHITE_BACKGROUND = "\033[47m"; // WHITE
-    public static final String UKN_BACKGROUND = "\033[48m"; // WHITE
     // High Intensity
     public static final String BLACK_BRIGHT = "\033[0;90m"; // BLACK
     public static final String RED_BRIGHT = "\033[0;91m"; // RED
