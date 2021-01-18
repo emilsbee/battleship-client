@@ -47,7 +47,7 @@ public class GameBoard implements Serializable {
         placeShip(GameBoard.DESTROYER, newBoard);
         placeShip(GameBoard.SUPER_PATROL, newBoard);
         placeShip(GameBoard.PATROL_BOAT, newBoard);
-
+        printBoard(newBoard);  
         setBoard(newBoard);
     }
 
