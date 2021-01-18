@@ -56,6 +56,10 @@ public class GameBoard implements Serializable {
     }
     
 
+    public String[][] getBoard() {
+        return this.board;
+    }
+
     public void placeShip(int[] ship, String[][] board) {
         for (int shipCount = 0; shipCount < ship[1]; shipCount++) { // Iterates over the number of ships
             
