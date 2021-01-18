@@ -1,7 +1,12 @@
+import java.io.Serializable;
 import java.util.Random;
 
-public class GameBoard {
-    // Ship definitions
+public class GameBoard implements Serializable {
+    /**
+	 *
+	 */
+	private static final long serialVersionUID = 7688335136468996702L;
+	// Ship definitions
     // First item in array is the size and second is amount of ships 
     private static final int[] CARRIER = {5, 2};
     private static final int[] BATTLESHIP = {4, 3};
@@ -11,32 +16,32 @@ public class GameBoard {
 
     private static String[] alphabet = { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o"};
     Random random;
-    
+    String[][] board;
     public GameBoard() {
         random = new Random();
+        generateBoard();
     }
 
-    public String[][] generateBoard() {
-        String[][] board = new String[15][10];
-        board = initialiseEmptyBoard(board);
-        System.out.println("RUNS1");
-        placeShip(GameBoard.CARRIER, board);
-        System.out.println("RUNS2");
-        placeShip(GameBoard.BATTLESHIP, board);
-        System.out.println("RUNS3");
-        placeShip(GameBoard.DESTROYER, board);
+    public String[][] getBoard() {
+        return this.board;
+    }
+
+    public void generateBoard() {
+        String[][] newBoard = new String[15][10];
+        newBoard = initialiseEmptyBoard(newBoard);
+        placeShip(GameBoard.CARRIER, newBoard);
+        placeShip(GameBoard.BATTLESHIP, newBoard);
+        placeShip(GameBoard.DESTROYER, newBoard);
         // System.out.println("RUNS4");
         // placeShip(GameBoard.SUPER_PATROL, board);
         // System.out.println("RUNS5");
         // placeShip(GameBoard.PATROL_BOAT, board);
-        printBoard(board);
-
-        return board;
+        this.board = newBoard;
     }
 
     public void placeShip(int[] ship, String[][] board) {
         for (int m = 0; m < ship[1]; m++) {
-
+            // printBoard(board);
             boolean fits = false;
 
             if (ship[0] == 1) { // If the ship is only one field big
@@ -60,7 +65,7 @@ public class GameBoard {
                     direction = random.nextInt(3); 
                     fits = doesFit(direction, board, ship[0], xStart, yStart);
                 }
-                
+                // System.out.println("X: " + xStart + " Y: " + yStart);
                 if (direction == 0) { // If placement is rightwards
                     
                     for (int i = xStart; i <= xStart + (ship[0]-1); i++) {

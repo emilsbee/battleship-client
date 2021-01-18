@@ -1,3 +1,8 @@
+package protocol;
+
+import exceptions.ProtocolException;
+import exceptions.ServerUnavailableException;
+
 public interface ClientProtocol {
     /**
      * Handles the following server-client handshake: 

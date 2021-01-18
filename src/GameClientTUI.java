@@ -1,5 +1,8 @@
 import java.util.Scanner;
 
+import exceptions.ExitProgram;
+import exceptions.ServerUnavailableException;
+
 public class GameClientTUI {
     private GameClient client;
     private Scanner in;

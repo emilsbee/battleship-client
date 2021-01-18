@@ -1,18 +1,22 @@
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+
+import exceptions.ExitProgram;
+import exceptions.ProtocolException;
+import exceptions.ServerUnavailableException;
+import protocol.ClientProtocol;
+import protocol.ProtocolMessages;
 
 public class GameClient implements ClientProtocol {
 	// Socket for communication with the server
 	private Socket socket;
 	
 	// Reading and writing buffers for communication with the server
-    private BufferedReader in;
-	private BufferedWriter out;
+    private ObjectInputStream in;
+	private ObjectOutputStream out;
 	
 	// The TUI for getting user input
 	private GameClientTUI view;
@@ -28,7 +32,7 @@ public class GameClient implements ClientProtocol {
 		board = new GameBoard();
     }
 	
-	public static void main(String[] args) throws ServerUnavailableException, ProtocolException {
+	public static void main(String[] args) throws ServerUnavailableException, ProtocolException, ClassNotFoundException {
 		System.out.println("Welcome to the battleship game!");
 		GameClient client = new GameClient();
 		client.setup();
@@ -44,8 +48,7 @@ public class GameClient implements ClientProtocol {
 	public void sendMessage(String message) throws ServerUnavailableException {
 		if (out != null) {
             try {
-				out.write(message);
-                out.newLine();
+				out.writeUTF(message);
                 out.flush();
             } catch (IOException e) {
 				view.showMessage(e.getMessage());
@@ -54,15 +57,30 @@ public class GameClient implements ClientProtocol {
         } else {
             throw new ServerUnavailableException("Could not wrie to server.");
         }
-    }
+	}
+	
+	public void sendBoard() throws ServerUnavailableException {
+		if (out != null) {
+ 
+			try {
+				ObjectOutputStream boardOut = new ObjectOutputStream(socket.getOutputStream());
+				boardOut.writeObject(this.board);
+				boardOut.flush();
+			} catch (IOException e) {
+				throw new ServerUnavailableException("Could not write to server.");
+			}
+		} else {
+			throw new ServerUnavailableException("Could not write to server");
+		}
+	}
 	
 	public void setup() throws ServerUnavailableException, ProtocolException {
 		try {
 			playerName = view.getString("Enter your player name, try to make it unique: ");
 			int port = view.getInt("Enter server port: ");
 			createConnection(port);
+			view.showMessage("HERE");
 			handleHello();
-			board.generateBoard();
 			start();
 		} catch (ExitProgram e) {
 			closeConnection();
@@ -73,17 +91,17 @@ public class GameClient implements ClientProtocol {
 	/**
 	 * Continuously listens to server input and forwards the input to the
 	 * {@link #handleCommand(String)} method.
+	 * @throws ClassNotFoundException
+	 * @throws ServerUnavailableException
 	 */
-	public void start() {
+	public void start() throws ServerUnavailableException {
 		
         String input;
 		try {
-			input = in.readLine();
-            while (input != null) {
+			input = in.readUTF();
+			while (input != null) {
                 handleCommand(input);
-                out.newLine();
-                out.flush();
-                input = in.readLine();
+                input = in.readUTF();
             }
         } catch (IOException e) {
 			e.printStackTrace();
@@ -91,11 +109,13 @@ public class GameClient implements ClientProtocol {
 	}
 
 	
-	public void handleCommand(String input) throws IOException {
+	public void handleCommand(String input) throws ServerUnavailableException {
 		if (input.equals(ProtocolMessages.HANDSHAKE)) { // Handshake
             view.showMessage("Welcome to the battleship server!");
 		} else if(input.split(";")[0].equals(ProtocolMessages.ENEMYNAME)) {
 			view.showMessage("Enemy: " + input.split(";")[1]);
+			sendMessage(ProtocolMessages.CLIENTBOARD);
+			sendBoard();
 		}
 		
 		if (!input.isEmpty()) {
@@ -165,8 +185,9 @@ public class GameClient implements ClientProtocol {
 				InetAddress addr = InetAddress.getByName(host);
 				view.showMessage("Attempting to connect to " + addr + ":" + port + "...");
 				socket = new Socket(addr, port);
-				in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-				out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+				out = new ObjectOutputStream(socket.getOutputStream());
+				in = new ObjectInputStream(socket.getInputStream());
+				view.showMessage("CREATE CONNET");
 			} catch (IOException e) {
 				view.showMessage("ERROR: could not create a socket on " + host + " and port " + port + ".");
 				throw new ExitProgram("User indicated to exit.");
