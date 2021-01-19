@@ -31,6 +31,13 @@ public class GameClient implements ClientProtocol {
 
     public GameClient() {
 		this.view = new GameClientTUI(this);
+		board = new GameBoard(false);
+
+		/* 
+			HERE BOARD IS PRINTED BEFORE ANY CONNECTING BEGINS
+			EDIT HOW THE BOARD IS PRINTED IN THE GameClientTUI class
+		*/
+		view.printBoard(board.getBoard());
     }
 	
 	public static void main(String[] args) throws ServerUnavailableException, ProtocolException {

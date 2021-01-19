@@ -83,6 +83,10 @@ public class GameClientTUI {
      * @param board the board to be printed.
      */
     public void printBoard(String[][] board) {
+        // Use this score variable for developing
+        int score = 20;
+
+
         for (int i = 0; i < 10; i++) {
             
             /* ALPHABET AT THE TOP */
