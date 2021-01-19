@@ -31,7 +31,7 @@ public class GameClient implements ClientProtocol {
 		this.view = new GameClientTUI(this);
     }
 	
-	public static void main(String[] args) throws ServerUnavailableException, ProtocolException, ClassNotFoundException {
+	public static void main(String[] args) throws ServerUnavailableException, ProtocolException {
 		System.out.println("Welcome to the battleship game!");
 		GameClient client = new GameClient();
 		client.setup();
@@ -89,7 +89,6 @@ public class GameClient implements ClientProtocol {
 	/**
 	 * Continuously listens to server input and forwards the input to the
 	 * {@link #handleCommand(String)} method.
-	 * @throws ClassNotFoundException
 	 * @throws ServerUnavailableException
 	 */
 	public void start() throws ServerUnavailableException {
@@ -109,13 +108,17 @@ public class GameClient implements ClientProtocol {
 	
 	public void handleCommand(String input) throws ServerUnavailableException {
 		if (input.equals(ProtocolMessages.HANDSHAKE)) { // Handshake
+
 			view.showMessage("Welcome to the battleship server!");
-		} else if(input.split(";")[0].equals(ProtocolMessages.ENEMYNAME)) {
+		
+		} else if(input.split(";")[0].equals(ProtocolMessages.ENEMYNAME)) { // Enemy name
+		
 			view.showMessage("Enemy: " + input.split(";")[1]);
 			board = new GameBoard(false);
 			sendMessage(ProtocolMessages.CLIENTBOARD);
 			sendBoard();
 			view.printBoard(board.getBoard());
+		
 		}
 		
 		if (!input.isEmpty()) {
