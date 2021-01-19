@@ -1,9 +1,11 @@
+// External imports
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 
+// Internal imports
 import exceptions.ExitProgram;
 import exceptions.ProtocolException;
 import exceptions.ServerUnavailableException;
@@ -90,15 +92,16 @@ public class GameClient implements ClientProtocol {
 	 * Continuously listens to server input and forwards the input to the
 	 * {@link #handleCommand(String)} method.
 	 * @throws ServerUnavailableException
+	 * @throws ProtocolException
 	 */
-	public void start() throws ServerUnavailableException {
+	public void start() throws ServerUnavailableException, ProtocolException {
 		
         String input;
 		try {
 			input = in.readUTF();
 			while (input != null) {
                 handleCommand(input);
-                input = in.readUTF();
+				input = in.readUTF();
             }
         } catch (IOException e) {
 			e.printStackTrace();
@@ -106,7 +109,7 @@ public class GameClient implements ClientProtocol {
 	}
 
 	
-	public void handleCommand(String input) throws ServerUnavailableException {
+	public void handleCommand(String input) throws ServerUnavailableException, ProtocolException {
 		if (input.equals(ProtocolMessages.HANDSHAKE)) { // Handshake
 
 			view.showMessage("Welcome to the battleship server!");
@@ -119,11 +122,15 @@ public class GameClient implements ClientProtocol {
 			sendBoard();
 			view.printBoard(board.getBoard());
 		
+		} else if (input.equals(ProtocolMessages.NAME_EXISTS)) {
+			view.showMessage("The name " + playerName + " is the same as your opponents. Please choose a different name.");
+			playerName = view.getString("Enter your player name: ");
+			handleHello();
 		}
 		
-		if (!input.isEmpty()) {
-			view.showMessage(input);
-		}
+		// if (!input.isEmpty()) {
+		// 	view.showMessage(input);
+		// }
     }
 	
 
