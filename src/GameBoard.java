@@ -8,13 +8,10 @@ import java.awt.Point;
 public class GameBoard implements Serializable {
 	private static final long serialVersionUID = 6798175181929406915L;
 
-    private static String[] alphabet = { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o"};
-
-    // Array of ships
+    // List of ships
     private List<Ship> ships;
 
-
-    // Game board grid
+    // The game board
     private String[][] board;
 
     // Ship definitions
@@ -25,9 +22,15 @@ public class GameBoard implements Serializable {
     private static final int[] SUPER_PATROL = {2, 8}; 
     private static final int[] PATROL_BOAT = {1, 10};
 
+    // Re-usable instance of Random
     Random random;
     
 
+    /**
+     * Constructor that calls for a board creation based on the argument. Either 
+     * calls to randomly generate the board or manually.
+     * @param manualPlacement Indicates whether the board will be created manually or randomly.
+     */
 	public GameBoard(boolean manualPlacement) {
         random = new Random();
         ships = new ArrayList<>();
@@ -38,28 +41,51 @@ public class GameBoard implements Serializable {
         }
     }
 
+    public void manualBoard() {
+        // Some comment
+    }
+
+    /**
+     * Initialises, generates and sets a randomly created board. 
+     */
     public void generateBoard() {
         String[][] newBoard = new String[15][10];
         newBoard = initialiseEmptyBoard(newBoard);
         
-        placeShip(GameBoard.CARRIER, newBoard);
-        placeShip(GameBoard.BATTLESHIP, newBoard);
-        placeShip(GameBoard.DESTROYER, newBoard);
-        placeShip(GameBoard.SUPER_PATROL, newBoard);
-        placeShip(GameBoard.PATROL_BOAT, newBoard);
+        findPlaceOnBoard(GameBoard.CARRIER, newBoard);
+        findPlaceOnBoard(GameBoard.BATTLESHIP, newBoard);
+        findPlaceOnBoard(GameBoard.DESTROYER, newBoard);
+        findPlaceOnBoard(GameBoard.SUPER_PATROL, newBoard);
+        findPlaceOnBoard(GameBoard.PATROL_BOAT, newBoard);
+
         setBoard(newBoard);
     }
 
+    /**
+     * Setter for a newly created board.
+     * @param board the board to be set.
+     */
     public void setBoard(String[][] board) {
         this.board = board;
     }
     
 
+    /**
+     * Getter for the game board created.
+     * @return the board.
+     */
     public String[][] getBoard() {
         return this.board;
     }
 
-    public void placeShip(int[] ship, String[][] board) {
+    /**
+     * Given a certain ship type, the method finds valid fields on the board to place the ship and then calls
+     * {@link #placeShip(int[], String[][], int, int)} method to place the ship and add it to the ships list. 
+     * This method does that for the specific amount of the ship needed. 
+     * @param ship
+     * @param board
+     */
+    public void findPlaceOnBoard(int[] ship, String[][] board) {
         for (int shipCount = 0; shipCount < ship[1]; shipCount++) { // Iterates over the number of ships
             
             /* Find free fields to place the ship */
@@ -74,28 +100,42 @@ public class GameBoard implements Serializable {
                 isPlaced = doesFit(x, y, ship[0], board);
             }
             
-            Point[] position = new Point[ship[0]];
-
-            /* Place the ship on board */
-            int count = 0;
-            for (int xPos = x; xPos < x + ship[0]; xPos++) {
-                board[xPos][y] = "SHIP";
-                position[count] = new Point(xPos, y); 
-                count++;
-            } 
-            /* Create ship instance and it to the ships list */
-            ships.add(new Ship(position));
+            placeShip(ship, board, x, y);
         }
-
-    }  
+    }
 
     /**
-     * 
+     * Places a given ship type with given coordinates on the board. The coordinates are just x and y value
+     * so for ships that are longer than one field, the ship is always placed horizontally and rightwards from
+     * the given coordinates. After ship is placed on the board, a Ship instance is created and added to the ships
+     * list.
+     * @param ship The ship to be placed.
+     * @param board The board to place the ship on.
+     * @param x The x coordinate of the ship starting field
+     * @param y The y coordinate of the ship starting field
+     */
+    public void placeShip(int[] ship, String[][] board, int x, int y) {
+        Point[] position = new Point[ship[0]];
+
+        /* Place the ship on board */
+        int count = 0;
+        for (int xPos = x; xPos < x + ship[0]; xPos++) {
+            board[xPos][y] = "SHIP";
+            position[count] = new Point(xPos, y); 
+            count++;
+        } 
+        /* Create ship instance and add it to the ships list */
+        ships.add(new Ship(position));
+    }  
+
+
+    /**
+     * Checks whether a given ship size fits on board and whether there are no other ships that the ship would overlap.
      * @param x Random X coordinate 
      * @param y Random Y coordinate
      * @param shipSize The size of the ship to be checked
      * @param board The game board
-     * @return Whether the ship fits on the board
+     * @return Whether the ship fits on the board and doesn't overlap any other ships
      */
     public boolean doesFit(int x, int y, int shipSize, String[][] board) {
         if (x + (shipSize-1) < 15) { // Checks whether ship fits on board
@@ -111,10 +151,12 @@ public class GameBoard implements Serializable {
         return false;
     }
 
-    public void manualBoard() {
-        // Some comment
-    } 
 
+    /**
+     * Initialises a given board by setting all fields of it to the string WATER
+     * @param board the board to be initalised with water fields
+     * @return the initialised board.
+     */
     public String[][] initialiseEmptyBoard(String[][] board) {
         for (int i = 0; i < 15; i++) {
             for (int j = 0; j < 10; j++) {
@@ -124,6 +166,13 @@ public class GameBoard implements Serializable {
         return board;
     }
 
+
+    /**
+     * Determines whether certain coordinates on the board are the end point of a ship.
+     * @param x x coordinate
+     * @param y y coordinate
+     * @return whether the given coordinates are endpoint of a ship
+     */
     public boolean isShipEnd(int x, int y) {
         for (Ship ship : ships) {
             if (ship.getPositon()[ship.getLength()-1].getX() == x && ship.getPositon()[ship.getLength()-1].getY() == y) {
@@ -133,170 +182,6 @@ public class GameBoard implements Serializable {
         return false;
     }
 
-    public void printBoard(String[][] board) {
-        for (int i = 0; i < 10; i++) {
-            
-            /* ALPHABET AT THE TOP */
-            if (i == 0) {
-                System.out.print("      "); // Left margin
-                for (int j = 0; j < 15; j++) {
-                    printBoardLine("space", 2);
-                    System.out.print(alphabet[j].toUpperCase());
-                    printBoardLine("space", 3);
-                }
-                System.out.println(" "); // New line
-                for (int j = 0; j < 15; j++) {
-                    printBoardLine("space", 5);
-                }
-            }
-            /* ALPHABET AT THE TOP */
-            
-
-            /* New line */
-            System.out.println(" ");
-            /* New line */
-
-            System.out.print("      "); 
-            for (int j = 0; j < 15; j++) { 
-                printBoardLine("blue", 5);
-                if (j != 14) {   
-                    printBoardLine("blue", 1);
-                }
-            }
-
-            /* New line */
-            System.out.println(" "); 
-            /* New line */
-
-            /* Line above the letters */
-            for (int j = 0; j < 15; j++) {
-                if (j == 0) {
-                    System.out.print("  ");
-                    printBoardLine("space", 4);
-                }
-                if (board[j][i].equals("WATER")) {
-                    printBoardLine("blue", 5);
-                    if (j != 14) {   
-                        printBoardLine("blue", 1);
-                    }
-
-                } else {
-                    printBoardLine("white", 5);
-                    if (isShipEnd(j, i)) {
-                        if (j != 14) {   
-                            printBoardLine("blue", 1);
-                        }
-                    } else {
-                        printBoardLine("white", 1);
-                    }
-                }
-            }
-            /* Line above the letters */
-
-            
-
-            /* New line */
-            System.out.println(" "); 
-            /* New line */
-
-            /* Line of letters */
-            for (int j = 0; j < 15; j++) {
-
-                /* Number on the left */
-                if (j == 0) {
-                    if (i+1 == 10) {
-                        printBoardLine("space", 2);
-                        System.out.print(String.valueOf(i+1).toUpperCase());
-                        printBoardLine("space", 2);
-                    } else {
-                        String toPrint = String.valueOf(i+1) + "  "; // This is necessary because every number besides ten takes up one space so it needs to be equaled out
-                        printBoardLine("space", 2);
-                        System.out.print(toPrint.toUpperCase());
-                        printBoardLine("space", 1);
-                    }
-                }
-                /* Number on the left */
-                
-                /* Actual letter printing W for water and S for ship */
-                if (board[j][i].equals("WATER")) {
-                    printBoardLine("blue", 5);
-                    if (j != 14) {   
-                        printBoardLine("blue", 1);
-                    }
-                } else {
-                    printBoardLine("white", 2);
-                    printBoardLine("ship", 1);
-                    printBoardLine("white", 2);
-                    if (isShipEnd(j, i)) {
-                        if (j != 14) {   
-                            printBoardLine("blue", 1);
-                        }
-                    } else {
-                        printBoardLine("white", 1);
-                    }
-                }
-                /* Actual letter printing W for water and S for ship */
-            }
-            /* Line of letters */
-
-            /* New line */
-            System.out.println(" "); 
-            /* New line */
-            
-            /* Line below the letters */
-            for (int j = 0; j < 15; j++) {
-                if (j == 0) {
-                    System.out.print("  ");
-                    printBoardLine("space", 4);
-                }
-                if (board[j][i].equals("WATER")) {
-                    printBoardLine("blue", 5);
-                    if (j != 14) {   
-                        printBoardLine("blue", 1);
-                    }
-
-                } else {
-                    printBoardLine("white", 5);
-                    if (isShipEnd(j, i)) {
-                        if (j != 14) {   
-                            printBoardLine("blue", 1);
-                        }
-                    } else {
-                         printBoardLine("white", 1);
-                    }
-                }
-            }
-            /* Line below the letters */
-    
-        }
-        /* New line */
-        System.out.println(" "); 
-        /* New line */
-    }
-    /**
-     * Print different kinds of lines of the board
-     * @param code The code given as a parameter to see what kind of line it needs to be
-     * @param amount the amount of times it needs to be printed
-     */
-    public void printBoardLine(String code, int amount){
-        for(int i = 0; i < amount; i++){
-            if(code.equals("blue")){
-                System.out.print(TerminalColors.BLUE_BACKGROUND + " "+ TerminalColors.RESET);
-            }
-            else if(code.equals("white")) {
-                System.out.print(TerminalColors.WHITE_BACKGROUND + " "+ TerminalColors.RESET);
-            }
-            else if(code.equals("ship")) {
-                System.out.print(TerminalColors.BLACK_FONT_WHITE_BACKGROUND + "S" + TerminalColors.RESET);
-            }
-            else if(code.equals("space")){
-                System.out.print(" ");
-            }
-            //else if(color.equals("red")) {
-            //  System.out.print(TerminalColors.RED_BACKGROUND + " "+ TerminalColors.RESET);
-            //}
-       }
-    }
 }
 
 

@@ -29,7 +29,6 @@ public class GameClient implements ClientProtocol {
 
     public GameClient() {
 		this.view = new GameClientTUI(this);
-		board = new GameBoard(false);
     }
 	
 	public static void main(String[] args) throws ServerUnavailableException, ProtocolException, ClassNotFoundException {
@@ -110,12 +109,13 @@ public class GameClient implements ClientProtocol {
 	
 	public void handleCommand(String input) throws ServerUnavailableException {
 		if (input.equals(ProtocolMessages.HANDSHAKE)) { // Handshake
-            view.showMessage("Welcome to the battleship server!");
+			view.showMessage("Welcome to the battleship server!");
 		} else if(input.split(";")[0].equals(ProtocolMessages.ENEMYNAME)) {
 			view.showMessage("Enemy: " + input.split(";")[1]);
+			board = new GameBoard(false);
 			sendMessage(ProtocolMessages.CLIENTBOARD);
 			sendBoard();
-			sendMessage("NEW message");
+			view.printBoard(board.getBoard());
 		}
 		
 		if (!input.isEmpty()) {
@@ -123,6 +123,12 @@ public class GameClient implements ClientProtocol {
 		}
     }
 	
+
+	public boolean isShipEnd(int x, int y) {
+        return board.isShipEnd(x, y);
+    }
+
+
 	@Override
 	public void handleHello() throws ServerUnavailableException, ProtocolException {
 		sendMessage(ProtocolMessages.HANDSHAKE+ProtocolMessages.DELIMITER+playerName);
