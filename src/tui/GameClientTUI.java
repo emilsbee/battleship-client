@@ -103,7 +103,7 @@ public class GameClientTUI {
             else if(i == 2) {
                 printBoardLine("space", 1);
                 printBoardLine("cyan", 5);
-                System.out.print(TerminalColors.BLACK_FONT_BOLD_CYAN_BACKGROUND + "Player name: " + name + TerminalColors.RESET); 
+                System.out.print(TerminalColors.WHITE_FONT_BOLD_CYAN_BACKGROUND + "Player name: " + name + TerminalColors.RESET); 
                 printBoardLine("cyan", 15 - name.length());  
             }
             else if(i == 3) {
@@ -112,7 +112,7 @@ public class GameClientTUI {
             else if(i == 4) {
                 printBoardLine("space", 1);
                 printBoardLine("cyan", 5);
-                System.out.print(TerminalColors.BLACK_FONT_BOLD_CYAN_BACKGROUND + "Score: " + score + TerminalColors.RESET); 
+                System.out.print(TerminalColors.WHITE_FONT_BOLD_CYAN_BACKGROUND + "Score: " + score + TerminalColors.RESET); 
                 printBoardLine("cyan", 21 - String.valueOf(score).length());  
             }
             printBoardLine("newLine", 1);
