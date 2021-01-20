@@ -1,3 +1,5 @@
+package client;
+
 // External imports
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -9,8 +11,10 @@ import java.net.Socket;
 import exceptions.ExitProgram;
 import exceptions.ProtocolException;
 import exceptions.ServerUnavailableException;
+import gameboard.GameBoard;
 import protocol.ClientProtocol;
 import protocol.ProtocolMessages;
+import tui.GameClientTUI;
 
 public class GameClient implements ClientProtocol {
 	// Socket for communication with the server
@@ -72,7 +76,7 @@ public class GameClient implements ClientProtocol {
  
 			try {
 				ObjectOutputStream boardOut = new ObjectOutputStream(socket.getOutputStream());
-				boardOut.writeObject(this.board);
+				boardOut.writeObject(this.board.getBoard());
 				boardOut.flush();
 			} catch (IOException e) {
 				throw new ServerUnavailableException("Could not write to server.");
@@ -138,11 +142,6 @@ public class GameClient implements ClientProtocol {
 		// if (!input.isEmpty()) {
 		// 	view.showMessage(input);
 		// }
-    }
-	
-
-	public boolean isShipEnd(int x, int y) {
-        return board.isShipEnd(x, y);
     }
 
 

@@ -1,5 +1,10 @@
+package tui;
+
 // External imports
 import java.util.Scanner;
+
+// Internal imports
+import client.GameClient;
 
 public class GameClientTUI {
     // The GameClient instance
@@ -135,7 +140,7 @@ public class GameClientTUI {
 
                 } else {
                     printBoardLine("white", 5);
-                    if (client.isShipEnd(j, i)) {
+                    if (board[j][i].endsWith("BACK") || board[j][i].equals("PATROL")) {
                         if (j != 14) {   
                             printBoardLine("blue", 1);
                         }
@@ -180,7 +185,7 @@ public class GameClientTUI {
                     printBoardLine("white", 2);
                     printBoardLine("ship", 1);
                     printBoardLine("white", 2);
-                    if (client.isShipEnd(j, i)) {
+                    if (board[j][i].endsWith("BACK") || board[j][i].equals("PATROL")) {
                         if (j != 14) {   
                             printBoardLine("blue", 1);
                         }
@@ -210,12 +215,12 @@ public class GameClientTUI {
 
                 } else {
                     printBoardLine("white", 5);
-                    if (client.isShipEnd(j, i)) {
+                    if (board[j][i].endsWith("BACK") || board[j][i].equals("PATROL")) {
                         if (j != 14) {   
                             printBoardLine("blue", 1);
                         }
                     } else {
-                         printBoardLine("white", 1);
+                        printBoardLine("white", 1);
                     }
                 }
             }

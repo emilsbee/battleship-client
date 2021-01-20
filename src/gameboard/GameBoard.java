@@ -1,13 +1,15 @@
+package gameboard;
+
 // External imports
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.awt.Point;
+
+// Internal imports
+import ships.*;
 
 
-public class GameBoard implements Serializable {
-	private static final long serialVersionUID = 6798175181929406915L;
+public class GameBoard  {
 
     // List of ships
     private List<Ship> ships;
@@ -15,18 +17,9 @@ public class GameBoard implements Serializable {
     // The game board
     private String[][] board;
 
-    // Ship definitions
-    // First item in array is the size and second is amount of ships 
-    private static final int[] CARRIER = {5, 2};
-    private static final int[] BATTLESHIP = {4, 3};
-    private static final int[] DESTROYER = {3, 5};
-    private static final int[] SUPER_PATROL = {2, 8}; 
-    private static final int[] PATROL_BOAT = {1, 10};
-
     // Re-usable instance of Random
     Random random;
     
-
     /**
      * Constructor that calls for a board creation based on the argument. Either 
      * calls to randomly generate the board or manually.
@@ -52,12 +45,11 @@ public class GameBoard implements Serializable {
     public void generateBoard() {
         String[][] newBoard = new String[15][10];
         newBoard = initialiseEmptyBoard(newBoard);
-        
-        findPlaceOnBoard(GameBoard.CARRIER, newBoard);
-        findPlaceOnBoard(GameBoard.BATTLESHIP, newBoard);
-        findPlaceOnBoard(GameBoard.DESTROYER, newBoard);
-        findPlaceOnBoard(GameBoard.SUPER_PATROL, newBoard);
-        findPlaceOnBoard(GameBoard.PATROL_BOAT, newBoard);
+        findPlaceOnBoard(new Carrier(), newBoard);
+        findPlaceOnBoard(new Battleship(), newBoard);
+        findPlaceOnBoard(new Destroyer(), newBoard);
+        findPlaceOnBoard(new SuperPatrol(), newBoard);
+        findPlaceOnBoard(new Patrol(), newBoard);
 
         setBoard(newBoard);
     }
@@ -80,14 +72,14 @@ public class GameBoard implements Serializable {
     }
 
     /**
-     * Given a certain ship type, the method finds valid fields on the board to place the ship and then calls
-     * {@link #placeShip(int[], String[][], int, int)} method to place the ship and add it to the ships list. 
+     * Given a certain ship type instance, the method finds valid fields on the board to place the ship and then calls
+     * {@link #placeOnBoard(String[][], int, int)} method on the ship instance to place the ship and add it to the ships list. 
      * This method does that for the specific amount of the ship needed. 
      * @param ship
      * @param board
      */
-    public void findPlaceOnBoard(int[] ship, String[][] board) {
-        for (int shipCount = 0; shipCount < ship[1]; shipCount++) { // Iterates over the number of ships
+    public void findPlaceOnBoard(Ship ship, String[][] board) {
+        for (int shipCount = 0; shipCount < ship.getAmount(); shipCount++) { // Iterates over the number of ships
             
             /* Find free fields to place the ship */
             boolean isPlaced = false;
@@ -98,37 +90,12 @@ public class GameBoard implements Serializable {
                 x = random.nextInt(15);
                 y = random.nextInt(10);
 
-                isPlaced = doesFit(x, y, ship[0], board);
+                isPlaced = doesFit(x, y, ship.getSize(), board);
             }
             
-            placeShip(ship, board, x, y);
+            ships.add(ship.placeOnBoard(board, x, y));
         }
     }
-
-    /**
-     * Places a given ship type with given coordinates on the board. The coordinates are just x and y value
-     * so for ships that are longer than one field, the ship is always placed horizontally and rightwards from
-     * the given coordinates. After ship is placed on the board, a Ship instance is created and added to the ships
-     * list.
-     * @param ship The ship to be placed.
-     * @param board The board to place the ship on.
-     * @param x The x coordinate of the ship starting field
-     * @param y The y coordinate of the ship starting field
-     */
-    public void placeShip(int[] ship, String[][] board, int x, int y) {
-        Point[] position = new Point[ship[0]];
-
-        /* Place the ship on board */
-        int count = 0;
-        for (int xPos = x; xPos < x + ship[0]; xPos++) {
-            board[xPos][y] = "SHIP";
-            position[count] = new Point(xPos, y); 
-            count++;
-        } 
-        /* Create ship instance and add it to the ships list */
-        ships.add(new Ship(position));
-    }  
-
 
     /**
      * Checks whether a given ship size fits on board and whether there are no other ships that the ship would overlap.
@@ -142,7 +109,7 @@ public class GameBoard implements Serializable {
         if (x + (shipSize-1) < 15) { // Checks whether ship fits on board
 
             for (int i = x; i < x+shipSize; i++) { // Iterates over the fields that the ship would take up
-                if (board[i][y].equals("SHIP")) {
+                if (!board[i][y].equals("WATER")) {
                     return false;
                 } 
             }
@@ -166,23 +133,6 @@ public class GameBoard implements Serializable {
         }
         return board;
     }
-
-
-    /**
-     * Determines whether certain coordinates on the board are the end point of a ship.
-     * @param x x coordinate
-     * @param y y coordinate
-     * @return whether the given coordinates are endpoint of a ship
-     */
-    public boolean isShipEnd(int x, int y) {
-        for (Ship ship : ships) {
-            if (ship.getPositon()[ship.getLength()-1].getX() == x && ship.getPositon()[ship.getLength()-1].getY() == y) {
-                return true;
-            } 
-        }
-        return false;
-    }
-
 }
 
 
