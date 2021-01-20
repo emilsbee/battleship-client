@@ -82,6 +82,42 @@ public class GameClientTUI {
     public void showMessage(String message) {
 		System.out.println(message);
     }
+    /**
+     * Printing the score and name of the player just before printing the board.
+     * @param score The score of the player that needs to be displayed above the board
+     * @param name The name of the player that needs to be displayed above the board
+     */
+    public void printScore(int score, String name) {
+        for(int i = 0; i < 7; i++) {
+            printBoardLine("space", 5); // left margin
+            if(i == 0 || i == 6) {
+                printBoardLine("space", 3);
+                printBoardLine("cyan", 29);
+                printBoardLine("space", 3);                       
+            }
+            else if(i == 1 || i  == 5) {
+                printBoardLine("space", 2);
+                printBoardLine("cyan", 31);
+                printBoardLine("space", 2);                       
+            }
+            else if(i == 2) {
+                printBoardLine("space", 1);
+                printBoardLine("cyan", 5);
+                System.out.print(TerminalColors.BLACK_FONT_BOLD_CYAN_BACKGROUND + "Player name: " + name + TerminalColors.RESET); 
+                printBoardLine("cyan", 15 - name.length());  
+            }
+            else if(i == 3) {
+                printBoardLine("cyan", 35);                       
+            }
+            else if(i == 4) {
+                printBoardLine("space", 1);
+                printBoardLine("cyan", 5);
+                System.out.print(TerminalColors.BLACK_FONT_BOLD_CYAN_BACKGROUND + "Score: " + score + TerminalColors.RESET); 
+                printBoardLine("cyan", 21 - String.valueOf(score).length());  
+            }
+            printBoardLine("newLine", 1);
+        }
+    }
 
     /**
      * Prints the given game board in terminal.
@@ -89,8 +125,18 @@ public class GameClientTUI {
      */
     public void printBoard(String[][] board) {
         // Use this score variable for developing
-        int score = 20;
+        int score = 5;
+        String name = "Baran";
 
+        /* New lines */
+        printBoardLine("newLine", 1);
+        /* New lines */
+
+        printScore(score, name);
+
+        /* New lines */
+        printBoardLine("newLine", 2);
+        /* New lines */
 
         for (int i = 0; i < 10; i++) {
             
@@ -102,7 +148,7 @@ public class GameClientTUI {
                     System.out.print(alphabet[j].toUpperCase());
                     printBoardLine("space", 3);
                 }
-                System.out.println(" "); // New line
+                printBoardLine("newLine", 1); // New line
                 for (int j = 0; j < 15; j++) {
                     printBoardLine("space", 5);
                 }
@@ -111,7 +157,7 @@ public class GameClientTUI {
             
 
             /* New line */
-            System.out.println(" ");
+            printBoardLine("newLine", 1);
             /* New line */
 
             System.out.print("      "); 
@@ -123,7 +169,7 @@ public class GameClientTUI {
             }
 
             /* New line */
-            System.out.println(" "); 
+            printBoardLine("newLine", 1);
             /* New line */
 
             /* Line above the letters */
@@ -154,7 +200,7 @@ public class GameClientTUI {
             
 
             /* New line */
-            System.out.println(" "); 
+            printBoardLine("newLine", 1);
             /* New line */
 
             /* Line of letters */
@@ -198,7 +244,7 @@ public class GameClientTUI {
             /* Line of letters */
 
             /* New line */
-            System.out.println(" "); 
+            printBoardLine("newLine", 1);
             /* New line */
             
             /* Line below the letters */
@@ -228,7 +274,7 @@ public class GameClientTUI {
     
         }
         /* New line */
-        System.out.println(" "); 
+        printBoardLine("newLine", 1);
         /* New line */
     }
 
@@ -239,21 +285,29 @@ public class GameClientTUI {
      */
     public void printBoardLine(String code, int amount){
         for(int i = 0; i < amount; i++){
-            if(code.equals("blue")){
-                System.out.print(TerminalColors.BLUE_BACKGROUND + " "+ TerminalColors.RESET);
+            switch (code) {
+                case "blue":
+                    System.out.print(TerminalColors.BLUE_BACKGROUND + " "+ TerminalColors.RESET);
+                    break;
+                case "white":
+                    System.out.print(TerminalColors.WHITE_BACKGROUND + " "+ TerminalColors.RESET);
+                    break;
+                case "ship":
+                    System.out.print(TerminalColors.BLACK_FONT_WHITE_BACKGROUND + "S" + TerminalColors.RESET);
+                    break;
+                case "space":
+                    System.out.print(" ");
+                    break;
+                case "newLine":
+                    System.out.println(" ");
+                    break;
+                case "cyan":
+                    System.out.print(TerminalColors.CYAN_BACKGROUND + " "+ TerminalColors.RESET);
+                    break;
+                //case "red":
+                    //System.out.print(TerminalColors.RED_BACKGROUND + " "+ TerminalColors.RESET);
+                   // break;
             }
-            else if(code.equals("white")) {
-                System.out.print(TerminalColors.WHITE_BACKGROUND + " "+ TerminalColors.RESET);
-            }
-            else if(code.equals("ship")) {
-                System.out.print(TerminalColors.BLACK_FONT_WHITE_BACKGROUND + "S" + TerminalColors.RESET);
-            }
-            else if(code.equals("space")){
-                System.out.print(" ");
-            }
-            //else if(color.equals("red")) {
-            //  System.out.print(TerminalColors.RED_BACKGROUND + " "+ TerminalColors.RESET);
-            //}
        }
     }
 }
