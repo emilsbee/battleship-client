@@ -17,13 +17,15 @@ public interface ClientProtocol {
      */
     public void handleHello() throws ServerUnavailableException, ProtocolException;
 
+    public void nameExists() throws ServerUnavailableException, ProtocolException;
+
     /**
     * Method to use to get the other players name given. This is received from server.
     * The received message construct: ProtocolMessages.ENEMYNAME + ProtocolMessages.DELIMITER + playerName
     * @param playerName the name of the player requesting the enemies name 
     * @return the enemy name to send to the other player. 
     */
-    public String enemyName(String playerName);
+    public void enemyName(String enemyName) throws ServerUnavailableException ;
 
     /**
      * Generates a gameboard given a randomly generated fields with ships/water. Client sends their generated board to the server.
@@ -31,22 +33,23 @@ public interface ClientProtocol {
      * @param board A double String array that represents the board. Contains values from the enum fieldState that make water and ships.
      * @return GameBoard to be sent to server  as their board. 
      */
-    public void clientBoard(String[][] board);
+    public void clientBoard() throws ServerUnavailableException; 
 
     /**
     * Receives from the server information about which player makes the first move.
     * Message construct: ProtocolMessages.SETUP + ProtocolMessages.DELIMITER + playerName
     * @return the name of player that goes first.
     */
-    public String gameSetup();
+    public void gameSetup(String whoGoesFirstName);
 
     /**
      * A move that the client makes and sends to server.
      * Message construct: ProtocolMessages.MOVE + ProtocolMessages.DELIMITER + xCoordinate + ProtocolMessages.DELIMITER + yCoordinate
      * @param x The x value of the move.
      * @param y The y value of the move
+     * @throws ServerUnavailableException
      */
-    public void move(int x, int y); 
+    public void move(int x, int y) throws ServerUnavailableException; 
 
     /**
      * Method to update both clients after one of them has made a move. The update
@@ -62,7 +65,7 @@ public interface ClientProtocol {
      * @param isTurn indicates whether the client has the move now
      * @return the update to both clients about the previous move.
      */
-    public String update(int x, int y, boolean isHit, boolean isSunk, boolean isTurn);
+    public void update(int x, int y, boolean isHit, boolean isSunk, boolean isLate, String whoWentName, String whoGoesNextName);
 
     /**
      * Method that is called when game ends. This could happen if 5 minutes pass, someone sinks all of opponent's ships
@@ -71,7 +74,7 @@ public interface ClientProtocol {
      * @param result integer from 0 to 2. 0: win, 1: lose, 2:tie.
      * @return the result of the game which is an int from 0 to 2 that represents whether the client won: 0, lost:1 or it is a tie:2.
      */
-    public String gameOver(int result);
+    public void gameOver(String playerName, boolean winType);
 
     /**
      * Sends a message to the server indicating that this client will exit:
