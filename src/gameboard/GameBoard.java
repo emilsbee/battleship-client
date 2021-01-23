@@ -5,11 +5,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import constants.GameConstants;
+import protocol.ProtocolMessages;
 // Internal imports
 import ships.*;
 
 
 public class GameBoard  {
+    // My score
+    int score;
 
     // List of ships
     private List<Ship> ships;
@@ -28,9 +32,10 @@ public class GameBoard  {
 	public GameBoard(boolean manualPlacement) {
         random = new Random();
         ships = new ArrayList<>();
+        score = 0;
         if (manualPlacement) {
             manualBoard();  
-        } else {
+            } else {
             generateBoard();
         }
     }
@@ -63,12 +68,32 @@ public class GameBoard  {
     }
     
 
+
     /**
      * Getter for the game board created.
      * @return the board.
      */
     public String[][] getBoard() {
         return this.board;
+    }
+
+    public int getScore() {
+        return this.score;
+    }
+
+    public void addScore(boolean isHit, boolean isSunk) {
+        if (isHit) {
+            score++;
+        }
+        if (isSunk) {
+            score++;
+        }
+    }
+
+    public void makeMove(int x, int y) {
+        if (!board[x][y].endsWith(GameConstants.FIELD_TYPE_HIT_EXTENSION)) {
+            board[x][y] = board[x][y] + GameConstants.FIELD_TYPE_HIT_EXTENSION;
+        }
     }
 
     /**
@@ -134,6 +159,27 @@ public class GameBoard  {
         return board;
     }
 
+
+    /**
+     * Encode the String double array board to a regular String in order to send it to the server
+     * through sockets.
+     * @param board The String[][] board to be encoded.
+     * @return A String representation of the String[][] board.
+     */
+    public String encodeBoard(String[][] board) {
+        String encodedBoard = ProtocolMessages.CLIENTBOARD;
+
+        for (int i = 0; i < GameConstants.BOARD_SIZE_Y; i++) {
+
+            for (int j = 0; j < GameConstants.BOARD_SIZE_X; j++) {
+                encodedBoard += ProtocolMessages.DELIMITER;
+                encodedBoard += board[j][i];
+            }
+
+        }
+
+        return encodedBoard;
+    }
 }
 
 

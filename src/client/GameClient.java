@@ -1,9 +1,11 @@
 package client;
 
 // External imports
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 
@@ -23,14 +25,19 @@ public class GameClient implements ClientProtocol {
 	private Socket socket;
 	
 	// Reading and writing buffers for communication with the server
-    private ObjectInputStream in;
-	private ObjectOutputStream out;
-	
+    // private ObjectInputStream in;
+	// private ObjectOutputStream out;
+	private BufferedReader in;
+    private BufferedWriter out;
+
 	// The TUI for getting user input
 	private GameClientTUI view;
 
 	// The user entered player name
 	private String playerName;
+
+	// Enemies name
+	private String enemyName;
 
 	// The enemy board
 	private EnemyGameBoard enemyBoard;
@@ -52,13 +59,12 @@ public class GameClient implements ClientProtocol {
 		this.view = new GameClientTUI(this);
 		board = new GameBoard(false);
 		enemyBoard = new EnemyGameBoard();
-		moveObj = new Move(enemyBoard, this);
+		moveObj = new Move(enemyBoard, this, view);
 		moveThread = new Thread(moveObj);
 		myMove = false;
     }
 	
 	public static void main(String[] args) throws ServerUnavailableException, ProtocolException {
-		System.out.println(TerminalColors.BLUE_BOLD + "> Welcome to the battleship game!" + TerminalColors.RESET);
 		GameClient client = new GameClient();
 		client.setup();
     }
@@ -72,10 +78,13 @@ public class GameClient implements ClientProtocol {
 	 * @throws ProtocolException if there is a messup with a protocol message.
 	 */
 	public void setup() throws ServerUnavailableException, ProtocolException {
+		view.showMessageLn(TerminalColors.BLUE_BOLD + "> Welcome to the battleship game!" + TerminalColors.RESET);
+		view.showEmptyLines(1);
+		view.showMessageLn(TerminalColors.BLUE_BOLD + "> To make a move in the game enter a-o and 1-10 (example: a,2)" + TerminalColors.RESET);
 		try {
-			view.showMessage(" ");
+			view.showEmptyLines(1);
 			playerName = view.getString(TerminalColors.PURPLE_BOLD + "> Enter your player name, try to make it unique: " + TerminalColors.RESET);
-			view.showMessage(" ");
+			view.showEmptyLines(1);
 			int port = view.getInt(TerminalColors.PURPLE_BOLD + "> Enter server port: "+ TerminalColors.RESET);
 			createConnection(port);
 			handleHello();
@@ -94,7 +103,8 @@ public class GameClient implements ClientProtocol {
 	public void sendMessage(String message) throws ServerUnavailableException {
 		if (out != null) {
 			try {
-				out.writeUTF(message);
+				out.write(message);
+				out.newLine();
                 out.flush();
             } catch (IOException e) {
                 throw new ServerUnavailableException("Could not write to server.");
@@ -116,15 +126,16 @@ public class GameClient implements ClientProtocol {
 		
         String input;
 		try {
-			input = in.readUTF();
+			input = in.readLine();
 			while (input != null) {
                 handleCommand(input);
-				input = in.readUTF();
+				input = in.readLine();
             }
         } catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
+
 
 	/**
 	 * Deals with the messages received from the server. If the input is a valid protocol message 
@@ -136,13 +147,13 @@ public class GameClient implements ClientProtocol {
 	public void handleCommand(String input) throws ServerUnavailableException, ProtocolException {
 		if (input.equals(ProtocolMessages.HANDSHAKE)) { // Handshake
 
-			view.showMessage("");
-			view.showMessage(TerminalColors.BLUE_BOLD + "> Welcome to the battleship server! Wait until an opponent connects." + TerminalColors.RESET);
+			view.showEmptyLines(1);
+			view.showMessageLn(TerminalColors.BLUE_BOLD + "> Welcome to the battleship server! Wait until an enemy connects." + TerminalColors.RESET);
 			
 		} else if(input.split(";")[0].equals(ProtocolMessages.ENEMYNAME)) { // Enemy name
 			
 			try {
-				String enemyName = input.split(";")[1];
+				enemyName = input.split(";")[1];
 				enemyName(enemyName);
 			} catch (ArrayIndexOutOfBoundsException e) {
 				throw new ProtocolException("Enemy name was not provided in ENEMYNAME message.");
@@ -178,7 +189,7 @@ public class GameClient implements ClientProtocol {
 			} catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {
 				throw new ProtocolException("Update message had problem parsing an integer or one of the values wasn't provided.");
 			}
-		} else if (input.split(";")[0].equals(ProtocolMessages.GAMEOVER)) {
+		} else if (input.split(";")[0].equals(ProtocolMessages.GAMEOVER)) { // Game over
 
 			try {
 				String winnerName = input.split(";")[1];
@@ -189,8 +200,6 @@ public class GameClient implements ClientProtocol {
 			}
 
 		}
-
-		
 	}
 
 
@@ -201,51 +210,38 @@ public class GameClient implements ClientProtocol {
 	
 	@Override
 	public void nameExists() throws ServerUnavailableException, ProtocolException {
-		view.showMessage(" ");
-		view.showMessage(TerminalColors.RED_BOLD +  "> The name " + playerName + " is the same as your opponents. Please choose a different name." + TerminalColors.RESET);
-		view.showMessage(" ");
+		view.showEmptyLines(1);
+		view.showMessageLn(TerminalColors.RED_BOLD +  "> The name " + playerName + " is the same as your opponents. Please choose a different name." + TerminalColors.RESET);
+		view.showEmptyLines(1);
 		playerName = view.getString(TerminalColors.PURPLE_BOLD + "> Enter your player name: " + TerminalColors.RESET);
 		handleHello();	
 	}
 
 	@Override
 	public void enemyName(String enemyName) throws ServerUnavailableException {
-		view.showMessage("");
-		view.showMessage(TerminalColors.BLUE_BOLD + "> Enemy: " + enemyName + TerminalColors.RESET);
-		view.showMessage("");
-		view.showMessage(TerminalColors.BLUE_BOLD + "> To make a move enter a-o and 1-10 (example: a,2)" + TerminalColors.RESET);
-		sendMessage(ProtocolMessages.CLIENTBOARD);
+		view.showEmptyLines(1);
+		view.showMessageLn(TerminalColors.BLUE_BOLD + "> Enemy: " + enemyName + TerminalColors.RESET);
+		view.printBoard(board.getBoard(), board.getScore(), playerName);
+		view.showEmptyLines(4);
+		view.printEnemyBoard(enemyBoard.getBoard(), enemyBoard.getScore(), enemyName);
 		clientBoard();
-		// view.printBoard(board.getBoard());
 	}
 
 	@Override
 	public void clientBoard() throws ServerUnavailableException {
-		if (out != null) {
- 
-			try {
-				ObjectOutputStream boardOut = new ObjectOutputStream(socket.getOutputStream());
-				boardOut.writeObject(this.board.getBoard());
-				boardOut.flush();
-			} catch (IOException e) {
-				throw new ServerUnavailableException("Could not write to server.");
-			}
-		} else {
-			throw new ServerUnavailableException("Could not write to server");
-		}	
+		sendMessage(board.encodeBoard(board.getBoard()));
 	}
 	
 	@Override
 	public void gameSetup(String whoGoesFirstName) {
 		moveThread.start();
-		
 		if (playerName.equals(whoGoesFirstName)) { // If I go first
-			view.showMessage(" ");
-			System.out.println(TerminalColors.GREEN_BOLD +  "> It's your turn!" + TerminalColors.RESET);
-			view.showMessage(" ");
+			view.showEmptyLines(1);
+			view.showMessageLn(TerminalColors.GREEN_BOLD +  "> It's your turn!" + TerminalColors.RESET);
+			view.showEmptyLines(1);
 			myMove = true;
-		} else {
-			view.showMessage(" ");
+		} else { // If enemy goes first
+			view.showEmptyLines(1);		
 		}
 	}
 
@@ -253,16 +249,13 @@ public class GameClient implements ClientProtocol {
 	public void move(int x, int y) {
 		if (myMove) {
 			try {
-				view.showMessage(" ");
-				view.showMessage(TerminalColors.GREEN_BOLD + "> Nice move!"+ TerminalColors.RESET);
 				sendMessage(ProtocolMessages.MOVE + ProtocolMessages.DELIMITER + String.valueOf(x) + ProtocolMessages.DELIMITER + String.valueOf(y));
-				myMove = false;
 			} catch (ServerUnavailableException e) {
-				view.showMessage("Could not wrie to server.");
+				view.showMessageLn("Could not wrie to server.");
 			}  
 		} else {
-			view.showMessage(" ");
-			view.showMessage(TerminalColors.RED_BOLD + "> Not your move!" + TerminalColors.RESET);
+			view.showEmptyLines(1);			
+			view.showMessageLn(TerminalColors.RED_BOLD + "> Not your move!" + TerminalColors.RESET);
 		}
 		
 	}
@@ -272,38 +265,69 @@ public class GameClient implements ClientProtocol {
 		if (isLate) { // If the update indicates that the move was late
 				
 			if (playerName.equals(whoWentName)) { // If I didn't make the move on time
-				System.out.println(" ");
-				System.out.println(" ");
-				System.out.println(TerminalColors.RED_BOLD +  "> You missed your move." + TerminalColors.RESET);
-				System.out.println(" ");
-				System.out.print(TerminalColors.PURPLE_BOLD + "> Enter coordinates: " + TerminalColors.RESET);
+				view.showEmptyLines(2);
+				view.showMessageLn(TerminalColors.RED_BOLD +  "> You missed your move." + TerminalColors.RESET);
+				view.showEmptyLines(1);
+				view.showMessage(TerminalColors.PURPLE_BOLD + "> Enter coordinates: " + TerminalColors.RESET);
 				myMove = false;
 		
 			} else { // If opponent didn't make their move on time
 
 				myMove = true;
-				System.out.println(" ");
-				System.out.println(" ");
-				System.out.println(TerminalColors.GREEN_BOLD +  "> It's your turn!" + TerminalColors.RESET);
-				System.out.println(" ");
-				System.out.print(TerminalColors.PURPLE_BOLD + "> Enter coordinates: " + TerminalColors.RESET);
+				view.showEmptyLines(2);
+				view.showMessageLn(TerminalColors.GREEN_BOLD +  "> It's your turn!" + TerminalColors.RESET);
+				view.showEmptyLines(1);
+				view.showMessage(TerminalColors.PURPLE_BOLD + "> Enter coordinates: " + TerminalColors.RESET);
 			}
 
 		} else { // If the update isn't about late move
 
-			if (!whoGoesNextName.equals(playerName)) { // If I made the previous move
-	
-				enemyBoard.makeMove(x, y, isHit, isSunk);
-				myMove = false;
+			if (playerName.equals(whoWentName)) { // If I made the previous move
+				
+				enemyBoard.makeMove(x, y, isHit);
+				board.addScore(isHit, isSunk);
+				view.printBoard(board.getBoard(), board.getScore(), playerName);
+				view.showEmptyLines(4);
+				view.printEnemyBoard(enemyBoard.getBoard(), enemyBoard.getScore(), enemyName);
+				if (!isHit) {
+					myMove = false;
+					view.showEmptyLines(2);
+					view.showMessageLn(TerminalColors.RED_BOLD+  "> You missed enemies boat. Wait for your move." + TerminalColors.RESET);
+					view.showEmptyLines(1);
+					view.showMessage(TerminalColors.PURPLE_BOLD + "> Enter coordinates: " + TerminalColors.RESET);
+				} else {
+					view.showEmptyLines(2);
+
+					if (isSunk) {
+						view.showMessageLn(TerminalColors.GREEN_BOLD +  "> You sunk enemies boat. It's your turn again!" + TerminalColors.RESET);
+					} else {
+						view.showMessageLn(TerminalColors.GREEN_BOLD +  "> You hit enemies boat. It's your turn again!" + TerminalColors.RESET);
+					}
+					view.showEmptyLines(1);
+					view.showMessage(TerminalColors.PURPLE_BOLD + "> Enter coordinates: " + TerminalColors.RESET);
+				}
+ 
 	
 			} else { // If opponent made the previous move
-	
-				myMove = true;
-				System.out.println(" ");
-				System.out.println(" ");
-				System.out.println(TerminalColors.GREEN_BOLD +  "> It's your turn!" + TerminalColors.RESET);
-				System.out.println(" ");
-				System.out.print(TerminalColors.PURPLE_BOLD + "> Enter coordinates: " + TerminalColors.RESET);
+				board.makeMove(x, y);
+				enemyBoard.addScore(isHit, isSunk);
+				view.printBoard(board.getBoard(), board.getScore(), playerName);
+				view.showEmptyLines(4);
+				view.printEnemyBoard(enemyBoard.getBoard(), enemyBoard.getScore(), enemyName);
+				if (!isHit) {
+					myMove = true;
+					view.showEmptyLines(2);
+					view.showMessageLn(TerminalColors.GREEN_BOLD +  "> Enemy missed your ship. It's your turn!" + TerminalColors.RESET);
+					view.showEmptyLines(1);
+					view.showMessage(TerminalColors.PURPLE_BOLD + "> Enter coordinates: " + TerminalColors.RESET);
+				} else {
+					myMove = false;
+					view.showEmptyLines(2);
+					view.showMessageLn(TerminalColors.RED_BOLD +  "> Enemy hit your ship. Wait for your move!" + TerminalColors.RESET);
+					view.showEmptyLines(1);
+					view.showMessage(TerminalColors.PURPLE_BOLD + "> Enter coordinates: " + TerminalColors.RESET);
+				}
+
 			}
 		
 		}
@@ -311,16 +335,22 @@ public class GameClient implements ClientProtocol {
 	
 	@Override
 	public void gameOver(String winnerName, boolean winType) {
-		if (playerName.equals(winnerName)) {
+		if (winType) { // If end of game was reached normally
 
-			if (winType) {
-				view.showMessage(" ");
-				view.showMessage(TerminalColors.GREEN_BOLD + "You won! Congratz!" + TerminalColors.RESET);
-			} else {
-				view.showMessage(TerminalColors.GREEN_BOLD + "Your opponent left, so you win! Congratz!" + TerminalColors.RESET);
+			if (playerName.equals(winnerName)) { // If I win
+				view.showEmptyLines(2);
+				view.showMessageLn(TerminalColors.GREEN_BOLD + "You won! Congratz!" + TerminalColors.RESET);
+			} else { // If opponent wins
+				view.showEmptyLines(2);
+				view.showMessageLn(TerminalColors.RED_BOLD + "You lost! Too bad!" + TerminalColors.RESET);
 			}
-			
+
+		} else { // If end of game was reached because opponent left
+			view.showEmptyLines(2);
+			view.showMessageLn(TerminalColors.GREEN_BOLD + "Your opponent left, so you win! Congratz!" + TerminalColors.RESET);
 		}
+		view.showEmptyLines(1);
+		view.showMessage("Type q to exit game: ");
     }
     
     @Override
@@ -350,13 +380,13 @@ public class GameClient implements ClientProtocol {
 			// try to open a Socket to the server
 			try {
 				InetAddress addr = InetAddress.getByName(host);
-				view.showMessage(" ");
-				view.showMessage(TerminalColors.BLUE_BOLD + "> Attempting to connect to " + addr + ":" + port + "..." + TerminalColors.RESET);
+				view.showEmptyLines(1);
+				view.showMessageLn(TerminalColors.BLUE_BOLD + "> Attempting to connect to " + addr + ":" + port + "..." + TerminalColors.RESET);
 				socket = new Socket(addr, port);
-				out = new ObjectOutputStream(socket.getOutputStream());
-				in = new ObjectInputStream(socket.getInputStream());
+				out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+            	in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			} catch (IOException e) {
-				view.showMessage("ERROR: could not create a socket on " + host + " and port " + port + ".");
+				view.showMessageLn("ERROR: could not create a socket on " + host + " and port " + port + ".");
 				throw new ExitProgram("User indicated to exit.");
 			}
 		}
@@ -379,7 +409,7 @@ public class GameClient implements ClientProtocol {
 	 * well as the socket.
 	 */
 	public void closeConnection() {
-		view.showMessage("Closing the connection...");
+		view.showMessageLn("Closing the connection...");
 		try {
 			in.close();
 			out.close();

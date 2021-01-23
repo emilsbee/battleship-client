@@ -5,6 +5,7 @@ import java.util.Scanner;
 
 // Internal imports
 import client.GameClient;
+import constants.GameConstants;
 
 public class GameClientTUI {
     // The GameClient instance
@@ -80,14 +81,29 @@ public class GameClientTUI {
      * @param message The message to be displayed.
      */
     public void showMessage(String message) {
-		System.out.println(message);
+		System.out.print(message);
     }
+
+    /**
+     * Simple method to show some new line message to the user.
+     * @param message to show to the user.
+     */
+    public void showMessageLn(String message) {
+        System.out.println(message);
+    }
+
+    public void showEmptyLines(int count) {
+        for (int i = 0; i < count; i++) {
+            System.out.println(" ");
+        }
+    }
+
     /**
      * Printing the score and name of the player just before printing the board.
      * @param score The score of the player that needs to be displayed above the board
      * @param name The name of the player that needs to be displayed above the board
      */
-    public void printScore(int score, String name) {
+    public void printScore(int score, String name, String playerType) {
         for(int i = 0; i < 7; i++) {
             printBoardLine("space", 5); // left margin
             if(i == 0 || i == 6) {
@@ -103,7 +119,7 @@ public class GameClientTUI {
             else if(i == 2) {
                 printBoardLine("space", 1);
                 printBoardLine("cyan", 5);
-                System.out.print(TerminalColors.WHITE_FONT_BOLD_CYAN_BACKGROUND + "Player name: " + name + TerminalColors.RESET); 
+                System.out.print(TerminalColors.WHITE_FONT_BOLD_CYAN_BACKGROUND +  playerType + ": " + name + TerminalColors.RESET); 
                 printBoardLine("cyan", 15 - name.length());  
             }
             else if(i == 3) {
@@ -123,16 +139,13 @@ public class GameClientTUI {
      * Prints the given game board in terminal.
      * @param board the board to be printed.
      */
-    public void printBoard(String[][] board) {
-        // Use this score variable for developing
-        int score = 5;
-        String name = "Baran";
+    public void printBoard(String[][] board, int score, String name) {
 
         /* New lines */
         printBoardLine("newLine", 1);
         /* New lines */
 
-        printScore(score, name);
+        printScore(score, name, "Player name");
 
         /* New lines */
         printBoardLine("newLine", 2);
@@ -160,11 +173,13 @@ public class GameClientTUI {
             printBoardLine("newLine", 1);
             /* New line */
 
-            System.out.print("      "); 
-            for (int j = 0; j < 15; j++) { 
-                printBoardLine("blue", 5);
-                if (j != 14) {   
-                    printBoardLine("blue", 1);
+            if (i != 0) {
+                System.out.print("      "); 
+                for (int j = 0; j < 15; j++) { 
+                    printBoardLine("blue", 5);
+                    if (j != 14) {   
+                        printBoardLine("blue", 1);
+                    }
                 }
             }
 
@@ -184,6 +199,20 @@ public class GameClientTUI {
                         printBoardLine("blue", 1);
                     }
 
+                } else if (board[j][i].equals("WATER_HIT")) {
+                    printBoardLine("black", 5);
+                    if (j != 14) {   
+                        printBoardLine("blue", 1);
+                    }
+                } else if (!board[j][i].equals("WATER_HIT") && board[j][i].endsWith(GameConstants.FIELD_TYPE_HIT_EXTENSION)) {
+                    printBoardLine("red", 5);
+                    if (board[j][i].endsWith("BACK_HIT") || board[j][i].equals("PATROL_HIT")) {
+                        if (j != 14) {   
+                            printBoardLine("blue", 1);
+                        }
+                    } else {
+                        printBoardLine("red", 1);
+                    }
                 } else {
                     printBoardLine("white", 5);
                     if (board[j][i].endsWith("BACK") || board[j][i].equals("PATROL")) {
@@ -227,6 +256,22 @@ public class GameClientTUI {
                     if (j != 14) {   
                         printBoardLine("blue", 1);
                     }
+                } else if (board[j][i].equals("WATER_HIT")) {
+                    printBoardLine("black", 5);
+                    if (j != 14) {   
+                        printBoardLine("blue", 1);
+                    }
+                } else if (!board[j][i].equals("WATER_HIT") && board[j][i].endsWith(GameConstants.FIELD_TYPE_HIT_EXTENSION)) {
+                    printBoardLine("red", 2);
+                    printBoardLine("ship-hit", 1);
+                    printBoardLine("red", 2);
+                    if (board[j][i].endsWith("BACK_HIT") || board[j][i].equals("PATROL_HIT")) {
+                        if (j != 14) {   
+                            printBoardLine("blue", 1);
+                        }
+                    } else {
+                        printBoardLine("red", 1);
+                    }
                 } else {
                     printBoardLine("white", 2);
                     printBoardLine("ship", 1);
@@ -259,6 +304,20 @@ public class GameClientTUI {
                         printBoardLine("blue", 1);
                     }
 
+                } else if (board[j][i].equals("WATER_HIT")) {
+                    printBoardLine("black", 5);
+                    if (j != 14) {   
+                        printBoardLine("blue", 1);
+                    }
+                } else if (!board[j][i].equals("WATER_HIT") && board[j][i].endsWith(GameConstants.FIELD_TYPE_HIT_EXTENSION)) {
+                    printBoardLine("red", 5);
+                    if (board[j][i].endsWith("BACK_HIT") || board[j][i].equals("PATROL_HIT")) {
+                        if (j != 14) {   
+                            printBoardLine("blue", 1);
+                        }
+                    } else {
+                        printBoardLine("red", 1);
+                    }
                 } else {
                     printBoardLine("white", 5);
                     if (board[j][i].endsWith("BACK") || board[j][i].equals("PATROL")) {
@@ -278,6 +337,162 @@ public class GameClientTUI {
         /* New line */
     }
 
+    public void printEnemyBoard(String[][] board, int score, String name) {
+
+        /* New lines */
+        printBoardLine("newLine", 1);
+        /* New lines */
+
+        printScore(score, name, "Enemy name");
+
+        /* New lines */
+        printBoardLine("newLine", 2);
+        /* New lines */
+
+        for (int i = 0; i < 10; i++) {
+            
+            /* ALPHABET AT THE TOP */
+            if (i == 0) {
+                System.out.print("      "); // Left margin
+                for (int j = 0; j < 15; j++) {
+                    printBoardLine("space", 2);
+                    System.out.print(alphabet[j].toUpperCase());
+                    printBoardLine("space", 3);
+                }
+                printBoardLine("newLine", 1); // New line
+                for (int j = 0; j < 15; j++) {
+                    printBoardLine("space", 5);
+                }
+            }
+            /* ALPHABET AT THE TOP */
+            
+
+            /* New line */
+            printBoardLine("newLine", 1);
+            /* New line */
+
+            if (i != 0) {
+                System.out.print("      "); 
+                for (int j = 0; j < 15; j++) { 
+                    printBoardLine("blue", 5);
+                    if (j != 14) {   
+                        printBoardLine("blue", 1);
+                    }
+                }
+            }
+
+            /* New line */
+            printBoardLine("newLine", 1);
+            /* New line */
+
+            /* Line above the letters */
+            for (int j = 0; j < 15; j++) {
+                if (j == 0) {
+                    System.out.print("  ");
+                    printBoardLine("space", 4);
+                }
+                if (board[j][i].equals("WATER")) {
+                    printBoardLine("blue", 5);
+                    if (j != 14) {   
+                        printBoardLine("blue", 1);
+                    }
+
+                } else if (board[j][i].equals("WATER_HIT")) {
+                    printBoardLine("black", 5);
+                    if (j != 14) {   
+                        printBoardLine("black", 1);
+                    }
+                } else {
+                    printBoardLine("red", 5);
+                    if (j != 14) {   
+                        printBoardLine("red", 1);
+                    }
+                }
+            }
+            /* Line above the letters */
+
+            
+
+            /* New line */
+            printBoardLine("newLine", 1);
+            /* New line */
+
+            /* Line of letters */
+            for (int j = 0; j < 15; j++) {
+
+                /* Number on the left */
+                if (j == 0) {
+                    if (i+1 == 10) {
+                        printBoardLine("space", 2);
+                        System.out.print(String.valueOf(i+1).toUpperCase());
+                        printBoardLine("space", 2);
+                    } else {
+                        String toPrint = String.valueOf(i+1) + "  "; // This is necessary because every number besides ten takes up one space so it needs to be equaled out
+                        printBoardLine("space", 2);
+                        System.out.print(toPrint.toUpperCase());
+                        printBoardLine("space", 1);
+                    }
+                }
+                /* Number on the left */
+                
+                /* Actual letter printing W for water and S for ship */
+                if (board[j][i].equals("WATER")) {
+                    printBoardLine("blue", 5);
+                    if (j != 14) {   
+                        printBoardLine("blue", 1);
+                    }
+
+                } else if (board[j][i].equals("WATER_HIT")) {
+                    printBoardLine("black", 5);
+                    if (j != 14) {   
+                        printBoardLine("black", 1);
+                    }
+                } else {
+                    printBoardLine("red", 5);
+                    if (j != 14) {   
+                        printBoardLine("red", 1);
+                    }
+                }
+                /* Actual letter printing W for water and S for ship */
+            }
+            /* Line of letters */
+
+            /* New line */
+            printBoardLine("newLine", 1);
+            /* New line */
+            
+            /* Line below the letters */
+            for (int j = 0; j < 15; j++) {
+                if (j == 0) {
+                    System.out.print("  ");
+                    printBoardLine("space", 4);
+                }
+                if (board[j][i].equals("WATER")) {
+                    printBoardLine("blue", 5);
+                    if (j != 14) {   
+                        printBoardLine("blue", 1);
+                    }
+
+                } else if (board[j][i].equals("WATER_HIT")) {
+                    printBoardLine("black", 5);
+                    if (j != 14) {   
+                        printBoardLine("black", 1);
+                    }
+                } else {
+                    printBoardLine("red", 5);
+                    if (j != 14) {   
+                        printBoardLine("red", 1);
+                    }
+                }
+            }
+            /* Line below the letters */
+    
+        }
+        /* New line */
+        printBoardLine("newLine", 1);
+        /* New line */
+    }
+
     /**
      * Prints specific lines for the board a specific amount of times.
      * @param code The code given as a parameter to see what kind of line it needs to be.
@@ -286,6 +501,9 @@ public class GameClientTUI {
     public void printBoardLine(String code, int amount){
         for(int i = 0; i < amount; i++){
             switch (code) {
+                case "black": 
+                    System.out.print(TerminalColors.BLACK_BACKGROUND + " "+ TerminalColors.RESET);
+                    break;
                 case "blue":
                     System.out.print(TerminalColors.BLUE_BACKGROUND + " "+ TerminalColors.RESET);
                     break;
@@ -294,6 +512,9 @@ public class GameClientTUI {
                     break;
                 case "ship":
                     System.out.print(TerminalColors.BLACK_FONT_WHITE_BACKGROUND + "S" + TerminalColors.RESET);
+                    break;
+                case "ship-hit":
+                    System.out.print(TerminalColors.BLACK_FONT_RED_BACKGROUND + "S" + TerminalColors.RESET);
                     break;
                 case "space":
                     System.out.print(" ");
@@ -304,9 +525,9 @@ public class GameClientTUI {
                 case "cyan":
                     System.out.print(TerminalColors.CYAN_BACKGROUND + " "+ TerminalColors.RESET);
                     break;
-                //case "red":
-                    //System.out.print(TerminalColors.RED_BACKGROUND + " "+ TerminalColors.RESET);
-                   // break;
+                case "red":
+                    System.out.print(TerminalColors.RED_BACKGROUND + " "+ TerminalColors.RESET);
+                   break;
             }
        }
     }

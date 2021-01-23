@@ -6,6 +6,7 @@ public class TerminalColors {
     // Special combos 1000
     public static final String BLACK_FONT_WHITE_BACKGROUND = "\033[0;30m\033[47m";
     public static final String WHITE_FONT_BOLD_CYAN_BACKGROUND = "\033[1;37m\033[46m";
+    public static final String BLACK_FONT_RED_BACKGROUND = "\033[1;37m\033[41m";
     // Regular Colors
     public static final String BLACK = "\033[0;30m"; // BLACK
     public static final String RED = "\033[0;31m"; // RED

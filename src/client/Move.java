@@ -5,25 +5,30 @@ import java.util.Scanner;
 
 // Internal imports
 import gameboard.EnemyGameBoard;
+import tui.GameClientTUI;
 import tui.TerminalColors;
 
 public class Move implements Runnable {
     // To convert the char input to an integer
-    private static final char[] alphabet = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o'};
+    private static final String[] alphabet = { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o"};
 
 
     // Scanner variable to get user input
     Scanner scanner;
 
     // Enemies game board
-    EnemyGameBoard enemyBoard;
+    private EnemyGameBoard enemyBoard;
     
     // The client
-    GameClient client;
+    private GameClient client;
 
-    public Move(EnemyGameBoard enemyGameBoard, GameClient client) {
-        this.enemyBoard = enemyGameBoard;
+    // The terminal view
+    private GameClientTUI view;
+
+    public Move(EnemyGameBoard enemyBoard, GameClient client, GameClientTUI view) {
+        this.enemyBoard = enemyBoard;
         this.client = client;
+        this.view = view;
     }
 
     /**
@@ -35,15 +40,19 @@ public class Move implements Runnable {
      */
     public void getMove() {
         boolean validMove = false;
-        char xChar;
+        String xChar;
         int x = 0;
 		int y = 0;
 		while (!validMove) {
-            System.out.println(" ");
+            view.showEmptyLines(1);
             String coordinates = getString("> Enter coordinates: ");
 
+            if (coordinates.equals("q")) {
+                System.exit(0);
+            }
+
             try {
-                xChar = coordinates.split(",")[0].charAt(0);
+                xChar = coordinates.split(",")[0];
                 y = Integer.parseInt(coordinates.split(",")[1]);
                 
                 if (indexOfLetterInAlphabet(xChar) != -1 && coordinates.split(",")[0].length() == 1) { // Checks whether the character that user inputs is a valid one in terms of whether it's on the board
@@ -53,22 +62,27 @@ public class Move implements Runnable {
                 }
     
                 if (!validMove && !client.getMyMove()) { // Checks whether the move entered is valid and whether it's the user's move
-                    showMessageLn(" ");      
-                    showMessageLn(TerminalColors.RED_BOLD + "> Invalid move and not your turn." + TerminalColors.RESET);
+                    view.showEmptyLines(1);   
+                    view.showMessageLn(TerminalColors.RED_BOLD + "> Invalid move and not your turn." + TerminalColors.RESET);
                 
                 } else if (!validMove) { // If it is the user's move but the move input is invalid
-                    showMessageLn(" ");
-                    showMessageLn(TerminalColors.RED_BOLD + "> Invalid move." + TerminalColors.RESET);
+                    view.showEmptyLines(1);
+                    view.showMessageLn(TerminalColors.RED_BOLD + "> Invalid move." + TerminalColors.RESET);
+                }
+
+                if (validMove) {
+                    x = indexOfLetterInAlphabet(xChar);
                 }
 
             } catch (ArrayIndexOutOfBoundsException | NumberFormatException | StringIndexOutOfBoundsException e) {
-                showMessageLn(" ");
-                showMessageLn(TerminalColors.RED_BOLD + "> Input is invalid. Remember input format example: a,2"+ TerminalColors.RESET);
+                view.showEmptyLines(1);
+                view.showMessageLn(TerminalColors.RED_BOLD + "> Input is invalid. Remember input format example: a,2"+ TerminalColors.RESET);
 
             }
 
             
          }
+
         client.move(x, y-1);
     }
 
@@ -77,14 +91,17 @@ public class Move implements Runnable {
      * @param letter the letter to check 
      * @return -1 if the letter isn't a valid input for a move, else the respective x value on the board
      */
-    public int indexOfLetterInAlphabet(char letter) {
-        
-        for (int i = 0; i < alphabet.length; i++) {
-            if (String.valueOf(alphabet[i]).equals(String.valueOf(letter))) {
-                return i;
+    public int indexOfLetterInAlphabet(String letter) {
+        if (letter.length() > 1 || letter.length() <= 0) {
+            return -1;
+        } else {
+            for (int i = 0; i < alphabet.length; i++) {
+                if (alphabet[i].equals(letter)) {
+                    return i;
+                }
             }
+            return -1;
         }
-        return -1;
      }
 
 
@@ -95,25 +112,9 @@ public class Move implements Runnable {
      */
     public String getString(String question) {
         scanner = new Scanner(System.in);
-        showMessage(TerminalColors.PURPLE_BOLD+ question+ TerminalColors.RESET);
+        view.showMessage(TerminalColors.PURPLE_BOLD+ question+ TerminalColors.RESET);
         return scanner.nextLine();
         
-    }
-
-    /**
-     * Simple method to show some new line message to the user.
-     * @param message to show to the user.
-     */
-    public void showMessageLn(String message) {
-        System.out.println(message);
-    }
-
-    /**
-     * Simple method to show some same line message to the user.
-     * @param message message to show to the user
-     */
-    public void showMessage(String message) {
-        System.out.print(message);
     }
 
 	@Override

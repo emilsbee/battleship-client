@@ -1,12 +1,12 @@
 package gameboard;
 
 public class EnemyGameBoard {
-    int points;
+    int score;
 
     public enum boardStates{
         WATER, // Blue
-        SHOT_WATER, // Black
-        SHOT_SHIP // Red
+        WATER_HIT, // Black
+        SHIP_HIT // Red
     }
 
     private String[][] board;
@@ -15,7 +15,28 @@ public class EnemyGameBoard {
     public EnemyGameBoard() {
         board = new String[15][10];
         board = initialiseEmptyBoard(board);
-        points = 0;
+        score = 0;
+    }
+
+    public void addScore(boolean isHit, boolean isSunk) {
+        if (isHit) {
+            score++;
+        }
+        if (isSunk) {
+            score++;
+        }
+    }
+
+    public int getScore() {
+        return this.score;
+    }
+
+    /**
+     * Getter for the game board created.
+     * @return the board.
+     */
+    public String[][] getBoard() {
+        return this.board;
     }
 
     /**
@@ -30,29 +51,23 @@ public class EnemyGameBoard {
             x <= 14 && 
             y >= 0 && 
             y <= 9 && 
-            !board[x][y].equals("SHOT_SHIP") &&
-            !board[x][y].equals("SHOT_WATER")
+            !board[x][y].equals("SHIP_HIT") &&
+            !board[x][y].equals("WATER_HIT")
         );
     }
 
     /**
      * Updates enemy board given coordinates of the move and whether or not it was a hit and whether a ship sunk.
-     * Points are added when ship is hit and when ships sinks.
+     * score are added when ship is hit and when ships sinks.
      * @param x X coordinate of the move.
      * @param y Y coordinate of the move.
      * @param isHit Indicates whether a ships was hit.
-     * @param isSunk Indicates whether a boat sunk.
      */
-    public void makeMove(int x, int y, boolean isHit, boolean isSunk) {
+    public void makeMove(int x, int y, boolean isHit) {
         if (isHit) {
-            board[x][y] = "SHOT_SHIP";
-            points++;
+            board[x][y] = "SHIP_HIT";
         } else {
-            board[x][y] = "SHOT_WATER";
-        }
-
-        if (isSunk) {
-            points++;
+            board[x][y] = "WATER_HIT";
         }
     }
 
