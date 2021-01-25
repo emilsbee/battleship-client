@@ -1,23 +1,36 @@
 package gameboard;
 
+// Internal imports
+import constants.GameConstants;
+
 public class EnemyGameBoard {
+    // Possible states of the fields of this board
+    public static final String WATER = "WATER";
+    public static final String WATER_HIT = "WATER_HIT";
+    public static final String SHIP_HIT = "SHIP_HIT";
+
+    // The score of this board
     int score;
 
-    public enum boardStates{
-        WATER, // Blue
-        WATER_HIT, // Black
-        SHIP_HIT // Red
-    }
-
+    // The actual board
     private String[][] board;
 
-
+    /**
+     * Initialises the board array and then calls {@link #initialiseEmptyBoard(String[][])}
+     * to set all fields to water.
+     */
     public EnemyGameBoard() {
         board = new String[15][10];
         board = initialiseEmptyBoard(board);
         score = 0;
     }
 
+    /**
+     * Used to add score depending on whether a ship and sunk.
+     * If true each of them contribute 1 point to the score.
+     * @param isHit Indicates whether ship was hit
+     * @param isSunk Indicates whether ship was sunk
+     */
     public void addScore(boolean isHit, boolean isSunk) {
         if (isHit) {
             score++;
@@ -27,6 +40,10 @@ public class EnemyGameBoard {
         }
     }
 
+    /**
+     * Getter for the score.
+     * @return The score of this board.
+     */
     public int getScore() {
         return this.score;
     }
@@ -48,11 +65,11 @@ public class EnemyGameBoard {
     public boolean isValidMove(int x, int y) {
         return (
             x >= 0 && 
-            x <= 14 && 
+            x < GameConstants.BOARD_SIZE_X && 
             y >= 0 && 
-            y <= 9 && 
-            !board[x][y].equals("SHIP_HIT") &&
-            !board[x][y].equals("WATER_HIT")
+            y < GameConstants.BOARD_SIZE_Y && 
+            !board[x][y].equals(EnemyGameBoard.SHIP_HIT) &&
+            !board[x][y].equals(EnemyGameBoard.WATER_HIT)
         );
     }
 
@@ -65,9 +82,9 @@ public class EnemyGameBoard {
      */
     public void makeMove(int x, int y, boolean isHit) {
         if (isHit) {
-            board[x][y] = "SHIP_HIT";
+            board[x][y] = EnemyGameBoard.SHIP_HIT;
         } else {
-            board[x][y] = "WATER_HIT";
+            board[x][y] = EnemyGameBoard.WATER_HIT;
         }
     }
 
@@ -77,9 +94,9 @@ public class EnemyGameBoard {
      * @return the initialised board.
      */
     public String[][] initialiseEmptyBoard(String[][] board) {
-        for (int i = 0; i < 15; i++) {
-            for (int j = 0; j < 10; j++) {
-                board[i][j] = "WATER";
+        for (int i = 0; i < GameConstants.BOARD_SIZE_X; i++) {
+            for (int j = 0; j < GameConstants.BOARD_SIZE_Y; j++) {
+                board[i][j] = EnemyGameBoard.WATER;
             }
         }
         return board;

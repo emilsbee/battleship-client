@@ -10,9 +10,9 @@ import java.net.InetAddress;
 import java.net.Socket;
 
 // Internal imports
-import exceptions.ExitProgram;
 import exceptions.ProtocolException;
 import exceptions.ServerUnavailableException;
+import game.Game;
 import gameboard.EnemyGameBoard;
 import gameboard.GameBoard;
 import protocol.ClientProtocol;
@@ -25,8 +25,6 @@ public class GameClient implements ClientProtocol {
 	private Socket socket;
 	
 	// Reading and writing buffers for communication with the server
-    // private ObjectInputStream in;
-	// private ObjectOutputStream out;
 	private BufferedReader in;
     private BufferedWriter out;
 
@@ -55,50 +53,131 @@ public class GameClient implements ClientProtocol {
 	boolean myMove;
 
 
+	/**
+	 * Initialises the TUI and a new game board. Then calls {@link #setup()}.
+	 */
     public GameClient() {
 		this.view = new GameClientTUI(this);
 		board = new GameBoard(false);
-		enemyBoard = new EnemyGameBoard();
-		moveObj = new Move(enemyBoard, this, view);
-		moveThread = new Thread(moveObj);
-		myMove = false;
+		try {
+			setup();
+		} catch (IOException | ServerUnavailableException | ProtocolException e) {
+			view.showMessageLn(e.getMessage());
+			System.exit(0);
+		}
     }
 	
-	public static void main(String[] args) throws ServerUnavailableException, ProtocolException {
-		GameClient client = new GameClient();
-		client.setup();
+	public static void main(String[] args) {
+		new GameClient();
     }
 	
 	/**
-	 * Establishes a connection to the server by asking the user for server's port and ip, then 
-	 * calling the {@link #createConnection(int)}. Afterwards sends the handshake message to server 
-	 * with {@link #handleHello()} and finally uses {@link} {@link #start()} to start the listening 
-	 * for server messages. 
-	 * @throws ServerUnavailableException if IO errors occur.
-	 * @throws ProtocolException if there is a messup with a protocol message.
-	 */
-	public void setup() throws ServerUnavailableException, ProtocolException {
+	 * Prompts the user about their player name and whether they want to play multiplayer or singleplayer.
+	 * If player chooses to play multiplayer then an enemy board is created, new move thread is created, and a connection to the server is created 
+	 * that is followed by handshake and calling {@link #start()} to listen to server messages. 
+	 * If player chooses to play single player then a new instance of a game is created and the game handles all singleplayer matters there.
+	 * @throws ServerUnavailableException If IO error occurs when communicating with the server.
+	 * @throws ProtocolException If there is a messup with a protocol message.
+	 * @throws IOException If a general IO error occurs not related to communcation with server.
+	 */                                             
+	public void setup() throws ServerUnavailableException, ProtocolException, IOException {
 		view.showMessageLn(TerminalColors.BLUE_BOLD + "> Welcome to the battleship game!" + TerminalColors.RESET);
 		view.showEmptyLines(1);
-		view.showMessageLn(TerminalColors.BLUE_BOLD + "> To make a move in the game enter a-o and 1-10 (example: a,2)" + TerminalColors.RESET);
-		try {
+
+		playerName = view.getString(TerminalColors.PURPLE_BOLD + "> Enter your player name, try to make it unique: " + TerminalColors.RESET);
+		view.showEmptyLines(1);
+		
+		String gameType = view.getGameType();
+
+		if (gameType.equalsIgnoreCase("m")) { // Multiplayer
+
+			enemyBoard = new EnemyGameBoard();
+			moveObj = new Move(enemyBoard, this, view);
+			moveThread = new Thread(moveObj);
+			myMove = false;
+	
+			try {
+				createConnection();
+				handleHello();
+				start();
+			} catch (ServerUnavailableException | ProtocolException e) {
+				closeConnection();
+				System.exit(0);
+			} 
+
+		} else { // Single player
+
+			new Game(playerName, view);
+		
+		}
+
+	}
+
+
+	/**
+	 * Creates a connection to the server. Requests the IP and port to 
+	 * connect to at the view (TUI).
+	 * The method continues to ask for an IP and port and attempts to connect 
+	 * until a connection is established or until the user indicates to exit 
+	 * the program.
+	 * @throws ServerUnavailableException
+	 */
+	public void createConnection() throws ServerUnavailableException {
+		clearConnection();
+		while (socket == null) {
 			view.showEmptyLines(1);
-			playerName = view.getString(TerminalColors.PURPLE_BOLD + "> Enter your player name, try to make it unique: " + TerminalColors.RESET);
+			String host = view.getString(TerminalColors.PURPLE_BOLD + "> Enter the ip address of the server: " + TerminalColors.RESET);
 			view.showEmptyLines(1);
 			int port = view.getInt(TerminalColors.PURPLE_BOLD + "> Enter server port: "+ TerminalColors.RESET);
-			createConnection(port);
-			handleHello();
-			start();
-		} catch (ExitProgram e) {
-			closeConnection();
-		} 
+			
+			// try to open a Socket to the server
+			try {
+				InetAddress addr = InetAddress.getByName(host);
+				view.showEmptyLines(1);
+				view.showMessageLn(TerminalColors.BLUE_BOLD + "> Attempting to connect to " + addr + ":" + port + "..." + TerminalColors.RESET);
+				socket = new Socket(addr, port);
+				out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+            	in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			} catch (IOException | IllegalArgumentException e) {
+				view.showEmptyLines(1);
+				view.showMessageLn(TerminalColors.RED_BOLD + "> Could not create a socket on " + host + " and port " + port + "." + TerminalColors.RESET);
+				throw new ServerUnavailableException("Exiting program.");
+			}
+		}
+	}
+	
+	/**
+	 * Resets the serverSocket and In- and OutputStreams to null.
+	 * Always make sure to close current connections via closeConnection() 
+	 * before calling this method!
+	 */
+	public void clearConnection() {
+		socket = null;
+		in = null;
+		out = null;
+	}
+	
+	/**
+	 * Closes the connection by closing the In- and OutputStreams, as 
+	 * well as the socket.
+	 */
+	public void closeConnection() throws IOException {
+		view.showMessageLn("Closing the connection...");
+		try {
+			in.close();
+			out.close();
+			socket.close();
+		} catch (IOException e) {
+			view.showMessageLn("Error closing connection. Exiting program.");
+			System.exit(0);
+		}
 	}
 	
     /**
-	 * Sends a message to the connected server. 
+	 * Sends a message to the connected server followed by a new line. 
 	 * The stream is then flushed.
-	 * @param message the message to write to the ObjectOutputStream.
-	 * @throws ServerUnavailableException if IO errors occur.
+	 * @param message The message to send to the server.
+	 * @throws ServerUnavailableException if IO errors occurs.
 	 */
 	public void sendMessage(String message) throws ServerUnavailableException {
 		if (out != null) {
@@ -107,10 +186,12 @@ public class GameClient implements ClientProtocol {
 				out.newLine();
                 out.flush();
             } catch (IOException e) {
-                throw new ServerUnavailableException("Could not write to server.");
+				view.showMessageLn("Could not write to server. Exiting program.");
+				System.exit(0);
             }
         } else {
-            throw new ServerUnavailableException("Could not wrie to server. ObjectOutputStream is null.");
+			view.showMessageLn("Could not write to server. Exiting program.");
+			System.exit(0);
         }
 	}
 	
@@ -132,7 +213,11 @@ public class GameClient implements ClientProtocol {
 				input = in.readLine();
             }
         } catch (IOException e) {
-			e.printStackTrace();
+			view.showMessageLn("Could not read from server. Exiting program.");
+			System.exit(0);
+		} catch (ProtocolException pe) {
+			view.showMessageLn(pe.getMessage());
+			System.exit(0);
 		}
 	}
 
@@ -190,7 +275,6 @@ public class GameClient implements ClientProtocol {
 				throw new ProtocolException("Update message had problem parsing an integer or one of the values wasn't provided.");
 			}
 		} else if (input.split(";")[0].equals(ProtocolMessages.GAMEOVER)) { // Game over
-
 			try {
 				String winnerName = input.split(";")[1];
 				boolean winType = Boolean.parseBoolean(input.split(";")[2]);
@@ -201,6 +285,15 @@ public class GameClient implements ClientProtocol {
 
 		}
 	}
+
+	/**
+	 * Getter for myMove
+	 * @return Whether it is my move or not.
+	 */
+	public boolean getMyMove() {
+		return this.myMove;
+	}
+
 
 
 	@Override
@@ -275,7 +368,7 @@ public class GameClient implements ClientProtocol {
 
 				myMove = true;
 				view.showEmptyLines(2);
-				view.showMessageLn(TerminalColors.GREEN_BOLD +  "> It's your turn!" + TerminalColors.RESET);
+				view.showMessageLn(TerminalColors.GREEN_BOLD +  "> Enemy missed their turn. It's your turn!" + TerminalColors.RESET);
 				view.showEmptyLines(1);
 				view.showMessage(TerminalColors.PURPLE_BOLD + "> Enter coordinates: " + TerminalColors.RESET);
 			}
@@ -338,85 +431,35 @@ public class GameClient implements ClientProtocol {
 		if (winType) { // If end of game was reached normally
 
 			if (playerName.equals(winnerName)) { // If I win
+
 				view.showEmptyLines(2);
 				view.showMessageLn(TerminalColors.GREEN_BOLD + "You won! Congratz!" + TerminalColors.RESET);
-			} else { // If opponent wins
+			
+			} else if (winnerName.isEmpty()) { // If it's a tie
+			
 				view.showEmptyLines(2);
-				view.showMessageLn(TerminalColors.RED_BOLD + "You lost! Too bad!" + TerminalColors.RESET);
+				view.showMessageLn(TerminalColors.GREEN_BOLD + "It's a tie! That's alright." + TerminalColors.RESET);
+			
+			} else { // If enemy wins
+
+				view.showEmptyLines(2);
+				view.showMessageLn(TerminalColors.RED_BOLD + "You lost! Too bad." + TerminalColors.RESET);
+
 			}
 
 		} else { // If end of game was reached because opponent left
+
 			view.showEmptyLines(2);
 			view.showMessageLn(TerminalColors.GREEN_BOLD + "Your opponent left, so you win! Congratz!" + TerminalColors.RESET);
+		
 		}
 		view.showEmptyLines(1);
 		view.showMessage("Type q to exit game: ");
     }
     
     @Override
-    public void sendExit() {
-		// Stub
-	}
-
-	
-	public boolean getMyMove() {
-		return this.myMove;
-	}
-
-	/**
-	 * Creates a connection to the server. Requests the IP and port to 
-	 * connect to at the view (TUI).
-	 * The method continues to ask for an IP and port and attempts to connect 
-	 * until a connection is established or until the user indicates to exit 
-	 * the program.
-	 * 
-	 * @throws ExitProgram if a connection is not established and the user indicates to want to exit the program.
-	 */
-	public void createConnection(int port) throws ExitProgram {
-		clearConnection();
-		while (socket == null) {
-			String host = "127.0.0.1";
-	
-			// try to open a Socket to the server
-			try {
-				InetAddress addr = InetAddress.getByName(host);
-				view.showEmptyLines(1);
-				view.showMessageLn(TerminalColors.BLUE_BOLD + "> Attempting to connect to " + addr + ":" + port + "..." + TerminalColors.RESET);
-				socket = new Socket(addr, port);
-				out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-            	in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-			} catch (IOException e) {
-				view.showMessageLn("ERROR: could not create a socket on " + host + " and port " + port + ".");
-				throw new ExitProgram("User indicated to exit.");
-			}
-		}
-	}
-	
-	/**
-	 * Resets the serverSocket and In- and OutputStreams to null.
-	 * 
-	 * Always make sure to close current connections via closeConnection() 
-	 * before calling this method!
-	 */
-	public void clearConnection() {
-		socket = null;
-		in = null;
-		out = null;
-	}
-	
-	/**
-	 * Closes the connection by closing the In- and OutputStreams, as 
-	 * well as the socket.
-	 */
-	public void closeConnection() {
-		view.showMessageLn("Closing the connection...");
-		try {
-			in.close();
-			out.close();
-			socket.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+    public void sendExit() throws ServerUnavailableException {
+		sendMessage(ProtocolMessages.EXIT);
 	}
 
 }

@@ -27,6 +27,7 @@ public class GameConstants {
     public static final String FIELD_TYPE_CARRIER_BACK_MID = "CARRIER_BACK_MID";
     public static final String FIELD_TYPE_CARRIER_BACK = "CARRIER_BACK";
 
+    // Hit field types in the client boards
     public static final String FIELD_TYPE_HIT_EXTENSION = "_HIT";
 
     public static final String FIELD_TYPE_WATER_HIT = "WATER_HIT";

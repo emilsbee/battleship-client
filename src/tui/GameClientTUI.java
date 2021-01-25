@@ -33,14 +33,17 @@ public class GameClientTUI {
      */
     public int getInt(String question) {
         int answer;
-		System.out.print(question);
+		showMessage(question);
 		while(true){
 			try {
                 answer = Integer.parseInt(in.next());
                 in.nextLine();
                 return answer;
 			} catch(NumberFormatException ne) {
-				System.out.print("That's not a valid number.\n"+question);
+                showEmptyLines(1);
+                showMessageLn(TerminalColors.RED_BOLD+ "> That's not a valid number." + TerminalColors.RESET);
+                showEmptyLines(1);
+                showMessage(question);
 			}
 		}
     }
@@ -75,6 +78,20 @@ public class GameClientTUI {
 			}
 		}
 	}
+
+    public String getGameType() {
+        showMessageLn(TerminalColors.BLUE_BOLD + "> To make a move in the game enter a-o and 1-10 (example: a,2)" + TerminalColors.RESET);
+        String gameType = "";
+        boolean correctGameType = false;
+		while (!correctGameType) {
+			showEmptyLines(1);
+			gameType = getString(TerminalColors.PURPLE_BOLD + "> Enter game type you want to play. For multiplayer type m, for singleplayer s: " + TerminalColors.RESET);
+			if (gameType.equalsIgnoreCase("m") || gameType.equalsIgnoreCase("s")) {
+				correctGameType = true;
+			}
+        }
+        return gameType;
+    }
 
     /**
      * Simple method to more easily display messages in terminal
