@@ -5,6 +5,9 @@ import exceptions.ProtocolException;
 import exceptions.ServerUnavailableException;
 import gameboard.GameBoard;
 
+/**
+ * Interface that must be implemented by a class that communicates with the server.
+ */
 public interface ClientProtocol {
     
     /**

@@ -6,6 +6,10 @@ import java.util.Scanner;
 // Internal imports
 import constants.GameConstants;
 
+/**
+ * This class is a TUI for the game client. Is prompts questions to the user and displays messages.
+ * Also it has methods to print out player's board, the score and name and the enemy's board, score and name.
+ */
 public class GameClientTUI {
 
     // Re-usable scanner instance for user input

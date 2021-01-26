@@ -3,6 +3,13 @@ package gameboard;
 // Internal imports
 import constants.GameConstants;
 
+/**
+ * This class represent the opponent's board of a player. The enemy's board has its own class because it differs from the player's own board.
+ * It differs because this board is simplre. Since it can only know when a ship has been hit or sunk its fields only have three values, regular water, hit water, and hit ship.
+ * This class can perform moves on the board and validate a move, meaning check out whether that move hasn't already previously been made.
+ * This class is used both when playing multiplayer and signleplayer.
+ * TODO: Create an interface to cover the methods that are used both by the GameBoard and the EnemyGameBoard
+ */
 public class EnemyGameBoard {
     // Possible states of the fields of this board
     public static final String WATER = "WATER";

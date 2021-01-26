@@ -12,6 +12,7 @@ import java.net.Socket;
 // Internal imports
 import exceptions.ProtocolException;
 import exceptions.ServerUnavailableException;
+import exceptions.SocketCreationException;
 import game.Game;
 import gameboard.EnemyGameBoard;
 import gameboard.GameBoard;
@@ -20,6 +21,11 @@ import protocol.ProtocolMessages;
 import tui.GameClientTUI;
 import tui.TerminalColors;
 
+/**
+ * This class represents the communication with the server. It sends and receives messages with/from the server. It also handles the incoming messages 
+ * with the methods that are overriden from the ClientProtocol. The message handler methods use the TUI to show the user what has happened in the game
+ * and also communicates with the players game board for game logic related matters. Mostly just creating a board and updating the board.
+ */
 public class GameClient implements ClientProtocol {
 	// Socket for communication with the server
 	private Socket socket;
@@ -59,12 +65,7 @@ public class GameClient implements ClientProtocol {
     public GameClient() {
 		this.view = new GameClientTUI();
 		board = new GameBoard(false);
-		try {
-			setup();
-		} catch (IOException | ServerUnavailableException | ProtocolException e) {
-			view.showMessageLn(e.getMessage());
-			System.exit(0);
-		}
+		setup();
     }
 	
 	public static void main(String[] args) {
@@ -80,7 +81,7 @@ public class GameClient implements ClientProtocol {
 	 * @throws ProtocolException If there is a messup with a protocol message.
 	 * @throws IOException If a general IO error occurs not related to communcation with server.
 	 */                                             
-	public void setup() throws ServerUnavailableException, ProtocolException, IOException {
+	public void setup() {
 		view.showMessageLn(TerminalColors.BLUE_BOLD + "> Welcome to the battleship game!" + TerminalColors.RESET);
 		view.showEmptyLines(1);
 
@@ -96,13 +97,25 @@ public class GameClient implements ClientProtocol {
 			moveObj = new Move(enemyBoard, this, view);
 			moveThread = new Thread(moveObj);
 			myMove = false;
-	
+			
 			try {
 				createConnection();
+			} catch (SocketCreationException sce) {
+				view.showMessageLn(TerminalColors.RED_BOLD+sce.getMessage()+TerminalColors.RESET);
+				System.exit(0);
+			}
+
+			try {
 				handleHello(playerName);
+			} catch (ServerUnavailableException sue) {
+				view.showMessageLn(TerminalColors.RED_BOLD+sue.getMessage()+TerminalColors.RESET);
+				System.exit(0);
+			}
+
+			try {
 				start();
-			} catch (ServerUnavailableException | ProtocolException e) {
-				closeConnection();
+			} catch (ProtocolException | ServerUnavailableException pe) {
+				view.showMessageLn(TerminalColors.RED_BOLD+pe.getMessage()+TerminalColors.RESET);
 				System.exit(0);
 			} 
 
@@ -123,7 +136,7 @@ public class GameClient implements ClientProtocol {
 	 * the program.
 	 * @throws ServerUnavailableException
 	 */
-	public void createConnection() throws ServerUnavailableException {
+	public void createConnection() throws SocketCreationException {
 		clearConnection();
 		while (socket == null) {
 			view.showEmptyLines(1);
@@ -140,9 +153,7 @@ public class GameClient implements ClientProtocol {
 				out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             	in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			} catch (IOException | IllegalArgumentException e) {
-				view.showEmptyLines(1);
-				view.showMessageLn(TerminalColors.RED_BOLD + "> Could not create a socket on " + host + " and port " + port + "." + TerminalColors.RESET);
-				throw new ServerUnavailableException("Exiting program.");
+				throw new SocketCreationException("Error while creating a connection to the server. " +e.getMessage());
 			}
 		}
 	}
@@ -162,12 +173,13 @@ public class GameClient implements ClientProtocol {
 	 * Closes the connection by closing the In- and OutputStreams, as 
 	 * well as the socket.
 	 */
-	public void closeConnection() throws IOException {
+	public void closeConnection() {
 		view.showMessageLn("Closing the connection...");
 		try {
 			in.close();
 			out.close();
 			socket.close();
+			System.exit(0);
 		} catch (IOException e) {
 			view.showMessageLn("Error closing connection. Exiting program.");
 			System.exit(0);
@@ -187,12 +199,10 @@ public class GameClient implements ClientProtocol {
 				out.newLine();
                 out.flush();
             } catch (IOException e) {
-				view.showMessageLn("Could not write to server. Exiting program.");
-				System.exit(0);
+				throw new ServerUnavailableException("Could not write to server. Exiting program.");
             }
         } else {
-			view.showMessageLn("Could not write to server. Exiting program.");
-			System.exit(0);
+			throw new ServerUnavailableException("Could not write to server. Exiting program.");
         }
 	}
 	
@@ -214,12 +224,8 @@ public class GameClient implements ClientProtocol {
 				input = in.readLine();
             }
         } catch (IOException e) {
-			view.showMessageLn("Could not read from server. Exiting program.");
-			System.exit(0);
-		} catch (ProtocolException pe) {
-			view.showMessageLn(pe.getMessage());
-			System.exit(0);
-		}
+			throw new ServerUnavailableException("Could not read from server. Exiting program.");
+		} 
 	}
 
 
@@ -298,12 +304,13 @@ public class GameClient implements ClientProtocol {
 
 
 	@Override
-	public void handleHello(String playerName) throws ServerUnavailableException, ProtocolException {
+	public void handleHello(String playerName) throws ServerUnavailableException {
+
 		sendMessage(ProtocolMessages.HANDSHAKE+ProtocolMessages.DELIMITER+playerName);
 	}
 	
 	@Override
-	public void nameExists() throws ServerUnavailableException, ProtocolException {
+	public void nameExists() throws ServerUnavailableException {
 		view.showEmptyLines(1);
 		view.showMessageLn(TerminalColors.RED_BOLD +  "> The name " + playerName + " is the same as your opponents. Please choose a different name." + TerminalColors.RESET);
 		view.showEmptyLines(1);

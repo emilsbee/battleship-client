@@ -1,5 +1,9 @@
 package ships;
 
+/**
+ * This class represents the battleships. It contains mostly information about the ship type. It is also used to 
+ * place a battleship on a given board.
+ */
 public class Battleship implements Ship {
     // The ship size indicates the number of fields it takes up
     private int size;

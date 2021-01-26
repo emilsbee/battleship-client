@@ -1,6 +1,8 @@
 package ships;
 
-
+/**
+ * The interface for creating the various ship types.
+ */
 public interface Ship  {
     /**
      * To get the length of the ship

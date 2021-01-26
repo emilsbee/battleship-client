@@ -10,6 +10,11 @@ import players.HumanPlayer;
 import tui.GameClientTUI;
 import tui.TerminalColors;
 
+/**
+ * This game represents a game for singleplayer. It is not used when playing multiplayer as this would be on the server side in that case. 
+ * The game basically keeps track of whos move it is, how many points each player has and whether the game should end or not. It also requests
+ * moves from each of the players when it's their turn to go. It runs on it's own thread as that's where the 5 minute game loop is.
+ */
 public class Game implements Runnable {
     // The constants to tell apart the human and computer player
     static final String HUMAN_PLAYER = "human";

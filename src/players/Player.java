@@ -1,5 +1,8 @@
 package players;
 
+/**
+ * The player interface allows to create different types of players that can participate in a single player game.
+ */
 public interface Player {
     /**
      * Called to request a move from the player.

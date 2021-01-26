@@ -12,6 +12,12 @@ import gameboard.GameBoard;
 import tui.GameClientTUI;
 import tui.TerminalColors;
 
+/**
+ * This class represents the human player in a singplayer game. It manages the human players
+ * game board and the move thread. As well as creates timer for 30 second in which the user must
+ * perform the move, otherwise the timer will perform the move and mark it as a late move. This class
+ * is also responsible for showing messages about the status of the game to the user.
+ */
 public class HumanPlayer implements Player  {
     // The player name of the human player
     private String playerName;

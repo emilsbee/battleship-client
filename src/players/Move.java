@@ -10,6 +10,17 @@ import gameboard.EnemyGameBoard;
 import tui.GameClientTUI;
 import tui.TerminalColors;
 
+/**
+ * This move class is extremely similar to the one for GameClient with just minor differences and the fact that it is used for singleplayer 
+ * instead of multiplayer like the other move class.. 
+ * Due to time constraints it wasnt possible to nicely combine them into one class that fits both multiplayer and singleplayer.
+ * However, it is important to note that it was planned to do. Overall the purpose and the way it functions is the same as the 
+ * move class for GameClient. It continuously asks for user input for a move, but of course doesnt allow the move to go through
+ * if it is not the user's move. The motive behind this class is the same as the other move class. It runs on its own thread so that
+ * user can input commands at any point, for example q to quit the game. It also allows to easily display any other messages in terminal 
+ * while still allowing the user to enter commands. This thread is started only after the singleplayer game has begun.
+ * TODO: Converge this class with the one in client package
+ */
 public class Move implements Runnable {
     // To convert the char input to an integer
     private static final String[] alphabet = { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o"};

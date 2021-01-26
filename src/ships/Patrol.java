@@ -1,5 +1,9 @@
 package ships;
 
+/**
+ * This class represents the patrols. It contains mostly information about the ship type. It is also used to 
+ * place a patrol on a given board.
+ */
 public class Patrol implements Ship {
     // The ship size indicates the number of fields it takes up
     private int size;

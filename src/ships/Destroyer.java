@@ -1,5 +1,9 @@
 package ships;
 
+/**
+ * This class represents the destroyers. It contains mostly information about the ship type. It is also used to 
+ * place a destroyer on a given board.
+ */
 public class Destroyer implements Ship {
     // The ship size indicates the number of fields it takes up
     private int size;

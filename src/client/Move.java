@@ -9,6 +9,16 @@ import gameboard.EnemyGameBoard;
 import tui.GameClientTUI;
 import tui.TerminalColors;
 
+/**
+ * This classes is used by the game client to continuously ask for user input for a move. This promopting for user input is on its own
+ * thread so as to not block the showing of other messages in terminal. Just because this always prompts for a move, doesn't mean that
+ * the move can always be made. That's because the game client keeps track of whether it is the user's move or not. Also, this continuously 
+ * prompting thread for user input allows the user to exit the game at any point by typing q. Ultimately, this idea for a thread that always asks
+ * for a move came about because of the 30 second restriction on a move. If a user misses a move then the scanner.readLine() should be canceled, but
+ * it can't be. Hence, it just always asks for input. Important to note that this thread is only started once a client has succesfully connected to the server
+ * and a game has begun
+ * TODO: Converge this class with the one in players package. 
+ */
 public class Move implements Runnable {
     // To convert the char input to an integer
     private static final String[] alphabet = { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o"};
