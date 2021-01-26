@@ -10,7 +10,7 @@ public class EnemyGameBoard {
     public static final String SHIP_HIT = "SHIP_HIT";
 
     // The score of this board
-    int score;
+    private int score;
 
     // The actual board
     private String[][] board;

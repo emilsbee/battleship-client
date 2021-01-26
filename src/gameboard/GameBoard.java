@@ -87,6 +87,14 @@ public class GameBoard  {
     }
 
     /**
+    * Getter for the list of ships that has been created and placed on the board
+    * @return the List of ships 
+    */
+    public List<Ship> getShips(){
+        return this.ships;
+    }
+
+    /**
      * Used to add score depending on whether a ship and sunk.
      * If true each of them contribute 1 point to the score.
      * @param isHit Indicates whether ship was hit
