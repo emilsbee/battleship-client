@@ -1,29 +1,26 @@
-package ships;
+package gameboards.ships;
 
 /**
- * This class represents the battleships. It contains mostly information about the ship type. It is also used to 
- * place a battleship on a given board.
+ * This class represents the destroyers. It contains mostly information about the ship type. It is also used to 
+ * place a destroyer on a given board.
  */
-public class Battleship implements Ship {
+public class Destroyer implements Ship {
     // The ship size indicates the number of fields it takes up
     private int size;
 
     // The amount of ships indicates how many this ship needs to be placed on the board
     private int amount; 
 
-
-    public Battleship() {
-        this.size = 4;
-        this.amount = 3;
+    public Destroyer() {
+        this.size = 3;
+        this.amount = 5;
     }
 
     private enum shipParts {
-        BATTLESHIP_FRONT,
-        BATTLESHIP_FRONT_MID,
-        BATTLESHIP_BACK_MID,
-        BATTLESHIP_BACK
+        DESTROYER_FRONT,
+        DESTROYER_MID,
+        DESTROYER_BACK
     }
-
 
 	@Override
 	public int getSize() {
@@ -37,8 +34,6 @@ public class Battleship implements Ship {
 
 	@Override
 	public Ship placeOnBoard(String[][] board, int x, int y) {
- 
-
         /* Place the ship on board */
         int count = 0;
         for (int xPos = x; xPos < x + this.getSize(); xPos++) {

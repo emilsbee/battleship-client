@@ -1,24 +1,23 @@
-package ships;
+package gameboards.ships;
 
 /**
- * This class represents the super patrols. It contains mostly information about the ship type. It is also used to 
- * place a super patrol on a given board.
+ * This class represents the patrols. It contains mostly information about the ship type. It is also used to 
+ * place a patrol on a given board.
  */
-public class SuperPatrol implements Ship {
+public class Patrol implements Ship {
     // The ship size indicates the number of fields it takes up
     private int size;
 
     // The amount of ships indicates how many this ship needs to be placed on the board
     private int amount; 
 
-    public SuperPatrol() {
-        this.size = 2;
-        this.amount = 8;
+    public Patrol() {
+        this.size = 1;
+        this.amount = 10;
     }
 
     private enum shipParts {
-        SUPER_PATROL_FRONT,
-        SUPER_PATROL_BACK
+        PATROL
     }
 
 	@Override

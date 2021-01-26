@@ -1,25 +1,24 @@
-package ships;
+package gameboards.ships;
 
 /**
- * This class represents the destroyers. It contains mostly information about the ship type. It is also used to 
- * place a destroyer on a given board.
+ * This class represents the super patrols. It contains mostly information about the ship type. It is also used to 
+ * place a super patrol on a given board.
  */
-public class Destroyer implements Ship {
+public class SuperPatrol implements Ship {
     // The ship size indicates the number of fields it takes up
     private int size;
 
     // The amount of ships indicates how many this ship needs to be placed on the board
     private int amount; 
 
-    public Destroyer() {
-        this.size = 3;
-        this.amount = 5;
+    public SuperPatrol() {
+        this.size = 2;
+        this.amount = 8;
     }
 
     private enum shipParts {
-        DESTROYER_FRONT,
-        DESTROYER_MID,
-        DESTROYER_BACK
+        SUPER_PATROL_FRONT,
+        SUPER_PATROL_BACK
     }
 
 	@Override

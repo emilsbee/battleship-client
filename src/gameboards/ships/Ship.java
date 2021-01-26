@@ -1,4 +1,4 @@
-package ships;
+package gameboards.ships;
 
 /**
  * The interface for creating the various ship types.

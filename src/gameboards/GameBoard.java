@@ -7,8 +7,13 @@ import java.util.Random;
 
 // Internal imports
 import constants.GameConstants;
+import gameboards.ships.Battleship;
+import gameboards.ships.Carrier;
+import gameboards.ships.Destroyer;
+import gameboards.ships.Patrol;
+import gameboards.ships.Ship;
+import gameboards.ships.SuperPatrol;
 import protocol.ProtocolMessages;
-import ships.*;
 
 /**
  * This class represents the game board of a player. It is more detailed than the enemies board since it is known where exactly each ship is displayed. Although 
