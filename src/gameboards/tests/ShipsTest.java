@@ -1,12 +1,16 @@
-package test;
-
-import ships.*;
+package gameboards.tests;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import gameboards.ships.Battleship;
+import gameboards.ships.Carrier;
+import gameboards.ships.Destroyer;
+import gameboards.ships.Patrol;
+import gameboards.ships.Ship;
+import gameboards.ships.SuperPatrol;
 
 
 /**

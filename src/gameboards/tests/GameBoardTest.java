@@ -1,15 +1,20 @@
-package test;
-
-import gameboard.GameBoard;
-import ships.*;
+package gameboards.tests;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import gameboards.GameBoard;
+import gameboards.ships.Battleship;
+import gameboards.ships.Carrier;
+import gameboards.ships.Destroyer;
+import gameboards.ships.Patrol;
+import gameboards.ships.Ship;
+import gameboards.ships.SuperPatrol;
 
 
 /**
