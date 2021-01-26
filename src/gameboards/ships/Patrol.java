@@ -1,13 +1,20 @@
-package ships;
+package gameboards.ships;
 
-// External imports
-import java.awt.Point;
-
-
+/**
+ * This class represents the patrols. It contains mostly information about the ship type. It is also used to 
+ * place a patrol on a given board.
+ */
 public class Patrol implements Ship {
-    private int size = 1;
-    private int amount = 10; 
-    private Point[] position;
+    // The ship size indicates the number of fields it takes up
+    private int size;
+
+    // The amount of ships indicates how many this ship needs to be placed on the board
+    private int amount; 
+
+    public Patrol() {
+        this.size = 1;
+        this.amount = 10;
+    }
 
     private enum shipParts {
         PATROL
@@ -25,14 +32,10 @@ public class Patrol implements Ship {
 
 	@Override
 	public Ship placeOnBoard(String[][] board, int x, int y) {
-        // Initialises the position array
-        position = new Point[this.getSize()];
-
         /* Place the ship on board */
         int count = 0;
         for (int xPos = x; xPos < x + this.getSize(); xPos++) {
             board[xPos][y] = shipParts.values()[count].toString();
-            position[count] = new Point(xPos, y); 
             count++;
         } 
 

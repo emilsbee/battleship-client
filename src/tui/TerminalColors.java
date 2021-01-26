@@ -1,12 +1,15 @@
 package tui;
 
+/**
+ * This class contains the various colors and color combinations for printing in the terminal.
+ */
 public class TerminalColors {
     // Reset
     public static final String RESET = "\033[0m"; // Text Reset
-    // Special combos 1000
-    public static final String BLACK_FONT_WHITE_BACKGROUND = "\033[0;30m\033[47m";
-    public static final String WHITE_FONT_BOLD_CYAN_BACKGROUND = "\033[1;37m\033[46m";
-    public static final String BLACK_FONT_RED_BACKGROUND = "\033[1;37m\033[41m";
+    // Special combos 
+    public static final String BLACK_FONT_WHITE_BACKGROUND = "\033[0;30m\033[47m"; // Black font on white background
+    public static final String WHITE_FONT_BOLD_CYAN_BACKGROUND = "\033[1;37m\033[46m"; // White font on cyan background
+    public static final String BLACK_FONT_RED_BACKGROUND = "\033[1;37m\033[41m"; // Black font on red background
     // Regular Colors
     public static final String BLACK = "\033[0;30m"; // BLACK
     public static final String RED = "\033[0;31m"; // RED

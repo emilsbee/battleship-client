@@ -1,6 +1,8 @@
-package ships;
+package gameboards.ships;
 
-
+/**
+ * The interface for creating the various ship types.
+ */
 public interface Ship  {
     /**
      * To get the length of the ship
@@ -10,7 +12,7 @@ public interface Ship  {
 
 
     /**
-     * To get the amount of the specific ship that need to be placed
+     * To get the amount of the specific ship that needs to be placed
      * @return The amount of ships of the implementing type to be placed
      */ 
     public int getAmount();

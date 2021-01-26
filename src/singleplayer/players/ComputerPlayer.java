@@ -1,13 +1,20 @@
-package players;
+package singleplayer.players;
 
 // External imports
 import java.util.Random;
 
-// Internal imports
-import game.Game;
-import gameboard.EnemyGameBoard;
-import gameboard.GameBoard;
+import gameboards.EnemyGameBoard;
+import gameboards.GameBoard;
+import singleplayer.game.Game;
 
+/**
+ * This class represents the computer player in a singleplayer game. It mainly serves 
+ * the purpose of making moves in the game. Although it also keeps track of its game board and 
+ * the opponents game board to make better moves. A future potential improvement is created smarter
+ * move making as right now it randomly picks a field that it hasn't already fired upon. Also, even though
+ * each player has 30 seconds to move it is assumed that the computer will be able to find the empty spot in much
+ * less than a 30 seconds, hence no timer was imlemented here. 
+ */
 public class ComputerPlayer implements Player {
     // Game instance
     private Game game;

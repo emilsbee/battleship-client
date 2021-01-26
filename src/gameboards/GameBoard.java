@@ -1,4 +1,4 @@
-package gameboard;
+package gameboards;
 
 // External imports
 import java.util.ArrayList;
@@ -7,17 +7,29 @@ import java.util.Random;
 
 // Internal imports
 import constants.GameConstants;
+import gameboards.ships.Battleship;
+import gameboards.ships.Carrier;
+import gameboards.ships.Destroyer;
+import gameboards.ships.Patrol;
+import gameboards.ships.Ship;
+import gameboards.ships.SuperPatrol;
 import protocol.ProtocolMessages;
-import ships.*;
 
-
+/**
+ * This class represents the game board of a player. It is more detailed than the enemies board since it is known where exactly each ship is displayed. Although 
+ * the biggest difference between the two boards is really how they're displayed in the terminal. This class is more detailed about showing the exact location of ships.
+ * This board is also used both in multiplayer and singleplayer although there are methods that are specific to the singplayer as they would otherwise be on server side. The javadoc
+ * mentions that a method is for singleplayer only. This class keeps track of where each ship is placed and which fields have been shot. It can also encode the board so it could
+ * be sent to the server.
+ * TODO: Create an interface to cover the methods that are used both by the GameBoard and the EnemyGameBoard
+ */
 public class GameBoard  {
     // The score of this board
     private int score;
 
     // List of ships
     private List<Ship> ships;
-
+ 
     // The game board
     private String[][] board;
 
