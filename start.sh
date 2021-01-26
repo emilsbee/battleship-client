@@ -1,1 +1,1 @@
-/home/arbestor/Documents/code/battleship-client ; /usr/lib/jvm/java-11-openjdk-amd64/bin/java -Dfile.encoding=UTF-8 -cp /home/arbestor/.config/Code/User/workspaceStorage/0f4b8b4e24fd7db7e8e8536527f4ea62/redhat.java/jdt_ws/battleship-client_4a24cc2f/bin client.GameClient
+/usr/lib/jvm/java-11-openjdk-amd64/bin/java -Dfile.encoding=UTF-8 @/tmp/cp_7v8o7alypgztvd79bumqe1drz.argfile multiplayer.GameClient 
