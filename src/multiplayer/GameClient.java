@@ -1,4 +1,4 @@
-package client;
+package multiplayer;
 
 // External imports
 import java.io.BufferedReader;
@@ -13,11 +13,11 @@ import java.net.Socket;
 import exceptions.ProtocolException;
 import exceptions.ServerUnavailableException;
 import exceptions.SocketCreationException;
-import game.Game;
-import gameboard.EnemyGameBoard;
-import gameboard.GameBoard;
+import gameboards.EnemyGameBoard;
+import gameboards.GameBoard;
 import protocol.ClientProtocol;
 import protocol.ProtocolMessages;
+import singleplayer.game.Game;
 import tui.GameClientTUI;
 import tui.TerminalColors;
 

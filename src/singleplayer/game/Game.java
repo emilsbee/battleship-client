@@ -1,12 +1,12 @@
-package game;
+package singleplayer.game;
 
 // External imports
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 // Internal imports
-import players.ComputerPlayer;
-import players.HumanPlayer;                                                                                                                                          
+import singleplayer.players.ComputerPlayer;
+import singleplayer.players.HumanPlayer;
 import tui.GameClientTUI;
 import tui.TerminalColors;
 

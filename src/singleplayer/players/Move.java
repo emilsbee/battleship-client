@@ -1,12 +1,12 @@
-package players;
+package singleplayer.players;
 
 // External imports
 import java.util.Scanner;
 
 // Internal imports
-import game.Game;
 import exceptions.ServerUnavailableException;
-import gameboard.EnemyGameBoard;
+import gameboards.EnemyGameBoard;
+import singleplayer.game.Game;
 import tui.GameClientTUI;
 import tui.TerminalColors;
 

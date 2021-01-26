@@ -1,12 +1,11 @@
-package players;
+package singleplayer.players;
 
 // External imports
 import java.util.Random;
 
-// Internal imports
-import game.Game;
-import gameboard.EnemyGameBoard;
-import gameboard.GameBoard;
+import gameboards.EnemyGameBoard;
+import gameboards.GameBoard;
+import singleplayer.game.Game;
 
 /**
  * This class represents the computer player in a singleplayer game. It mainly serves 

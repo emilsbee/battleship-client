@@ -1,11 +1,11 @@
-package client;
+package multiplayer;
 
 // External imports
 import java.util.Scanner;
 
 // Internal imports
 import exceptions.ServerUnavailableException;
-import gameboard.EnemyGameBoard;
+import gameboards.EnemyGameBoard;
 import tui.GameClientTUI;
 import tui.TerminalColors;
 

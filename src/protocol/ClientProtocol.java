@@ -3,7 +3,7 @@ package protocol;
 // Internal imports
 import exceptions.ProtocolException;
 import exceptions.ServerUnavailableException;
-import gameboard.GameBoard;
+import gameboards.GameBoard;
 
 /**
  * Interface that must be implemented by a class that communicates with the server.

@@ -1,4 +1,4 @@
-package gameboard;
+package gameboards;
 
 // External imports
 import java.util.ArrayList;

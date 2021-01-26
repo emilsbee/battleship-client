@@ -1,14 +1,13 @@
-package players;
+package singleplayer.players;
 
 // External imports
 import java.util.Scanner;
 import java.util.Timer;
 import java.util.TimerTask;
 
-// Internal imports
-import game.Game;
-import gameboard.EnemyGameBoard;
-import gameboard.GameBoard;
+import gameboards.EnemyGameBoard;
+import gameboards.GameBoard;
+import singleplayer.game.Game;
 import tui.GameClientTUI;
 import tui.TerminalColors;
 

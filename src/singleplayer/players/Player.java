@@ -1,4 +1,4 @@
-package players;
+package singleplayer.players;
 
 /**
  * The player interface allows to create different types of players that can participate in a single player game.
