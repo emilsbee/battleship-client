@@ -1,13 +1,16 @@
 package ships;
 
-// External imports
-import java.awt.Point;
-
-
 public class Carrier implements Ship {
-    private int size = 5;
-    private int amount = 2; 
-    private Point[] position;
+    // The ship size indicates the number of fields it takes up
+    private int size;
+
+    // The amount of ships indicates how many this ship needs to be placed on the board
+    private int amount; 
+    
+    public Carrier() {
+        this.size = 5;
+        this.amount = 2;
+    }
 
     private enum shipParts {
         CARRIER_FRONT,
@@ -16,6 +19,7 @@ public class Carrier implements Ship {
         CARRIER_BACK_MID,
         CARRIER_BACK
     }
+
 
 	@Override
 	public int getSize() {
@@ -30,21 +34,16 @@ public class Carrier implements Ship {
 
 	@Override
 	public Ship placeOnBoard(String[][] board, int x, int y) {
-        // Initialises the position array
-        position = new Point[this.getSize()];
 
         /* Place the ship on board */
         int count = 0;
         for (int xPos = x; xPos < x + this.getSize(); xPos++) {
             board[xPos][y] = shipParts.values()[count].toString();
-            position[count] = new Point(xPos, y); 
             count++;
         } 
 
 		return this;
 	}
 
-
-    
     
 }

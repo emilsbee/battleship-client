@@ -57,7 +57,7 @@ public class GameClient implements ClientProtocol {
 	 * Initialises the TUI and a new game board. Then calls {@link #setup()}.
 	 */
     public GameClient() {
-		this.view = new GameClientTUI(this);
+		this.view = new GameClientTUI();
 		board = new GameBoard(false);
 		try {
 			setup();
@@ -87,6 +87,7 @@ public class GameClient implements ClientProtocol {
 		playerName = view.getString(TerminalColors.PURPLE_BOLD + "> Enter your player name, try to make it unique: " + TerminalColors.RESET);
 		view.showEmptyLines(1);
 		
+		view.showMessageLn(TerminalColors.BLUE_BOLD + "> To make a move in the game enter a-o and 1-10 (example: a,2)" + TerminalColors.RESET);
 		String gameType = view.getGameType();
 
 		if (gameType.equalsIgnoreCase("m")) { // Multiplayer
@@ -98,7 +99,7 @@ public class GameClient implements ClientProtocol {
 	
 			try {
 				createConnection();
-				handleHello();
+				handleHello(playerName);
 				start();
 			} catch (ServerUnavailableException | ProtocolException e) {
 				closeConnection();
@@ -297,7 +298,7 @@ public class GameClient implements ClientProtocol {
 
 
 	@Override
-	public void handleHello() throws ServerUnavailableException, ProtocolException {
+	public void handleHello(String playerName) throws ServerUnavailableException, ProtocolException {
 		sendMessage(ProtocolMessages.HANDSHAKE+ProtocolMessages.DELIMITER+playerName);
 	}
 	
@@ -307,7 +308,7 @@ public class GameClient implements ClientProtocol {
 		view.showMessageLn(TerminalColors.RED_BOLD +  "> The name " + playerName + " is the same as your opponents. Please choose a different name." + TerminalColors.RESET);
 		view.showEmptyLines(1);
 		playerName = view.getString(TerminalColors.PURPLE_BOLD + "> Enter your player name: " + TerminalColors.RESET);
-		handleHello();	
+		handleHello(playerName);	
 	}
 
 	@Override
@@ -317,11 +318,11 @@ public class GameClient implements ClientProtocol {
 		view.printBoard(board.getBoard(), board.getScore(), playerName);
 		view.showEmptyLines(4);
 		view.printEnemyBoard(enemyBoard.getBoard(), enemyBoard.getScore(), enemyName);
-		clientBoard();
+		clientBoard(board);
 	}
 
 	@Override
-	public void clientBoard() throws ServerUnavailableException {
+	public void clientBoard(GameBoard board) throws ServerUnavailableException {
 		sendMessage(board.encodeBoard(board.getBoard()));
 	}
 	
@@ -339,13 +340,9 @@ public class GameClient implements ClientProtocol {
 	}
 
 	@Override
-	public void move(int x, int y) {
+	public void move(int x, int y) throws ServerUnavailableException {
 		if (myMove) {
-			try {
-				sendMessage(ProtocolMessages.MOVE + ProtocolMessages.DELIMITER + String.valueOf(x) + ProtocolMessages.DELIMITER + String.valueOf(y));
-			} catch (ServerUnavailableException e) {
-				view.showMessageLn("Could not wrie to server.");
-			}  
+			sendMessage(ProtocolMessages.MOVE + ProtocolMessages.DELIMITER + String.valueOf(x) + ProtocolMessages.DELIMITER + String.valueOf(y));
 		} else {
 			view.showEmptyLines(1);			
 			view.showMessageLn(TerminalColors.RED_BOLD + "> Not your move!" + TerminalColors.RESET);

@@ -10,7 +10,7 @@ public interface Ship  {
 
 
     /**
-     * To get the amount of the specific ship that need to be placed
+     * To get the amount of the specific ship that needs to be placed
      * @return The amount of ships of the implementing type to be placed
      */ 
     public int getAmount();

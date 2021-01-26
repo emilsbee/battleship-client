@@ -4,12 +4,9 @@ package tui;
 import java.util.Scanner;
 
 // Internal imports
-import client.GameClient;
 import constants.GameConstants;
 
 public class GameClientTUI {
-    // The GameClient instance
-    private GameClient client;
 
     // Re-usable scanner instance for user input
     private Scanner in;
@@ -18,12 +15,9 @@ public class GameClientTUI {
     private static final String[] alphabet = { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o"};
 
     
-    public GameClientTUI(GameClient client) {
-        this.client = client;
+    public GameClientTUI() {
         this.in = new Scanner(System.in);
     }
-
-  
 
     /**
      * Simple method to get an integer input from the user given a certain question.
@@ -79,8 +73,11 @@ public class GameClientTUI {
 		}
 	}
 
+    /**
+     * Requests the game type: multiplayer or singleplayer until the user inputs a valid answer
+     * @return The game type player chose m: multiplayer, s: singleplayer.
+     */
     public String getGameType() {
-        showMessageLn(TerminalColors.BLUE_BOLD + "> To make a move in the game enter a-o and 1-10 (example: a,2)" + TerminalColors.RESET);
         String gameType = "";
         boolean correctGameType = false;
 		while (!correctGameType) {
@@ -109,6 +106,11 @@ public class GameClientTUI {
         System.out.println(message);
     }
 
+    /**
+     * For better formatting and user experience often mutliple empty lines have to be 
+     * printed so this method prints as many empty lines as told.
+     * @param count The amount of empty lines to be printed.
+     */
     public void showEmptyLines(int count) {
         for (int i = 0; i < count; i++) {
             System.out.println(" ");
@@ -354,6 +356,14 @@ public class GameClientTUI {
         /* New line */
     }
 
+    /**
+     * Prints enemies board which is more primitive than the user's board since it doesn't have
+     * information about exact locations of the ships. So it doesn't include nice spaces between
+     * different ships like the user's board does. It doesnt represent ships at all, except when they are hit.
+     * @param board The enemy's board
+     * @param score The enemy's score
+     * @param name The enemy's name
+     */
     public void printEnemyBoard(String[][] board, int score, String name) {
 
         /* New lines */
