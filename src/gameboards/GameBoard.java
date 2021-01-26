@@ -115,9 +115,9 @@ public class GameBoard  {
     public void addScore(boolean isHit, boolean isSunk) {
         if (isHit) {
             score++;
-        }
-        if (isSunk) {
-            score++;
+            if(isSunk) {
+                score++;
+            }
         }
     }
 
@@ -250,7 +250,7 @@ public class GameBoard  {
      * This is only for single player because in multiplayer the server would do this instead.
      * @return Whether all ships have been destroyed or not.
      */
-    private boolean allShipsDestroyed() {
+    public boolean allShipsDestroyed() {
         boolean allShipsDestroyed = true;
 
         for (int i = 0; i < GameConstants.BOARD_SIZE_Y; i++) {
@@ -276,7 +276,7 @@ public class GameBoard  {
      * @param y The Y coordinate of the move.
      * @return Whether a ship was sunk as a result of the move.
      */
-    private boolean hasSunk(int x, int y) {
+    public boolean hasSunk(int x, int y) {
         boolean hasSunk = true; // Indicator for whether ship was sunk
 
         String fieldName = board[x][y]; // The name of the field that the move was made upon

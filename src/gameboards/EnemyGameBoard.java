@@ -41,9 +41,9 @@ public class EnemyGameBoard {
     public void addScore(boolean isHit, boolean isSunk) {
         if (isHit) {
             score++;
-        }
-        if (isSunk) {
-            score++;
+            if(isSunk) {
+                score++;
+            }
         }
     }
 

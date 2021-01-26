@@ -40,11 +40,11 @@ public class EnemyGameBoardTest {
     }
 
     /**
-     * 
+     * Test the method addScore(), which adds a points if a ship has been hit and adds an extra point if the ship has been sunk
      */
     @Test
     public void addScoreTest() {
-        assertTrue(enemyGameBoard.getScore() == 0); //check if initial value of points = 0
+        assertTrue(enemyGameBoard.getScore() == 0); //Check if initial value of points = 0
 
         enemyGameBoard.addScore(false, false); //Did not hit a ship
         assertTrue(enemyGameBoard.getScore() == 0);
@@ -61,7 +61,15 @@ public class EnemyGameBoardTest {
         enemyGameBoard.addScore(false, false); //Did not hit a ship, so points should stay 3 after a ship has been sunk
         assertTrue(enemyGameBoard.getScore() == 3);
 
-        //enemyGameBoard.addScore(false, true); //Did not hit a ship, but did sunk the ship. This should not add any points to the score
-        //assertTrue(enemyGameBoard.getScore() == 3);
+        enemyGameBoard.addScore(false, true); //Did not hit a ship, but did sunk the ship. This should not add any points to the score
+        assertTrue(enemyGameBoard.getScore() == 3);
+    }
+
+    /**
+     * 
+     */
+    @Test
+    public void isValidMoveTest() {
+
     }
 }
