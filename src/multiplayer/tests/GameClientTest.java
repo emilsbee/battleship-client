@@ -2,24 +2,10 @@ package multiplayer.tests;
 
 // External imports
 import org.junit.jupiter.api.*;
-
-import exceptions.ProtocolException;
-import exceptions.ServerUnavailableException;
 import gameboards.GameBoard;
 import multiplayer.GameClient;
-import protocol.ProtocolMessages;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.net.ServerSocket;
-import java.net.Socket;
 
 public class GameClientTest {
     public static final int PORT = 8888; 

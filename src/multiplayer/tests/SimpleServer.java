@@ -1,4 +1,4 @@
-package multiplayer.tests;
+ package multiplayer.tests;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -36,16 +36,15 @@ public class SimpleServer {
             Socket socket = serverSocket.accept();
             out = new PrintWriter(socket.getOutputStream());
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            System.out.println("here");
+            
+            /* Handshake */
             String handshake = in.readLine();
-
-            if (handshake.split(";")[0].equals(ProtocolMessages.HANDSHAKE)) {
-                try {
-                    String name = handshake.split(";")[1];
+            try {
+                if (handshake.split(";")[0].equals(ProtocolMessages.HANDSHAKE) && !handshake.split(";")[1].isEmpty()) {
                     out.println(ProtocolMessages.HANDSHAKE);
-                } catch (ArrayIndexOutOfBoundsException e) {
-                    e.printStackTrace();
                 }
+            } catch (ArrayIndexOutOfBoundsException e) {
+                e.printStackTrace();
             }
 		} catch (IOException e) {
 			e.printStackTrace();
