@@ -144,7 +144,7 @@ public class GameClientTUI {
                 printBoardLine("space", 1);
                 printBoardLine("cyan", 5);
                 System.out.print(TerminalColors.WHITE_FONT_BOLD_CYAN_BACKGROUND +  playerType + ": " + name + TerminalColors.RESET); 
-                printBoardLine("cyan", 15 - name.length());  
+                printBoardLine("cyan", 26 - playerType.length() - name.length());  
             }
             else if(i == 3) {
                 printBoardLine("cyan", 35);                       
