@@ -127,6 +127,7 @@ public class GameClientTUI {
      * @param name The name of the player that needs to be displayed above the board
      */
     public void printScore(int score, String name, String playerType) {
+        showEmptyLines(2);
         for(int i = 0; i < 7; i++) {
             printBoardLine("space", 5); // left margin
             if(i == 0 || i == 6) {

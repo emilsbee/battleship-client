@@ -241,7 +241,7 @@ public class GameClient implements ClientProtocol {
 
 			view.showEmptyLines(1);
 			view.showMessageLn(TerminalColors.BLUE_BOLD + "> Welcome to the battleship server! Wait until an enemy connects." + TerminalColors.RESET);
-			
+			moveThread.start();
 		} else if(input.split(";")[0].equals(ProtocolMessages.ENEMYNAME)) { // Enemy name
 			
 			try {
@@ -257,7 +257,7 @@ public class GameClient implements ClientProtocol {
 			nameExists();
 
 		} else if (input.split(";")[0].equals(ProtocolMessages.SETUP)) { // Game setup
-
+			
 			try {
 				String whoGoesFirstName = input.split(";")[1];
 				gameSetup(whoGoesFirstName);
@@ -342,7 +342,7 @@ public class GameClient implements ClientProtocol {
 	
 	@Override
 	public void gameSetup(String whoGoesFirstName) {
-		moveThread.start();
+		
 		if (playerName.equals(whoGoesFirstName)) { // If I go first
 			view.showEmptyLines(1);
 			view.showMessageLn(TerminalColors.GREEN_BOLD +  "> It's your turn!" + TerminalColors.RESET);
@@ -351,6 +351,8 @@ public class GameClient implements ClientProtocol {
 		} else { // If enemy goes first
 			view.showEmptyLines(1);		
 		}
+		view.showEmptyLines(1);
+		view.showMessage(TerminalColors.PURPLE_BOLD + "> Enter coordinates or q to quit: " + TerminalColors.RESET);
 	}
 
 	@Override
@@ -372,7 +374,7 @@ public class GameClient implements ClientProtocol {
 				view.showEmptyLines(2);
 				view.showMessageLn(TerminalColors.RED_BOLD +  "> You missed your move." + TerminalColors.RESET);
 				view.showEmptyLines(1);
-				view.showMessage(TerminalColors.PURPLE_BOLD + "> Enter coordinates: " + TerminalColors.RESET);
+				view.showMessage(TerminalColors.PURPLE_BOLD + "> Enter coordinates or q to quit: " + TerminalColors.RESET);
 				myMove = false;
 		
 			} else { // If opponent didn't make their move on time
@@ -381,7 +383,7 @@ public class GameClient implements ClientProtocol {
 				view.showEmptyLines(2);
 				view.showMessageLn(TerminalColors.GREEN_BOLD +  "> Enemy missed their turn. It's your turn!" + TerminalColors.RESET);
 				view.showEmptyLines(1);
-				view.showMessage(TerminalColors.PURPLE_BOLD + "> Enter coordinates: " + TerminalColors.RESET);
+				view.showMessage(TerminalColors.PURPLE_BOLD + "> Enter coordinates or q to quit: " + TerminalColors.RESET);
 			}
 
 		} else { // If the update isn't about late move
@@ -398,7 +400,7 @@ public class GameClient implements ClientProtocol {
 					view.showEmptyLines(2);
 					view.showMessageLn(TerminalColors.RED_BOLD+  "> You missed enemies boat. Wait for your move." + TerminalColors.RESET);
 					view.showEmptyLines(1);
-					view.showMessage(TerminalColors.PURPLE_BOLD + "> Enter coordinates: " + TerminalColors.RESET);
+					view.showMessage(TerminalColors.PURPLE_BOLD + "> Enter coordinates or q to quit: " + TerminalColors.RESET);
 				} else {
 					view.showEmptyLines(2);
 
@@ -408,7 +410,7 @@ public class GameClient implements ClientProtocol {
 						view.showMessageLn(TerminalColors.GREEN_BOLD +  "> You hit enemies boat. It's your turn again!" + TerminalColors.RESET);
 					}
 					view.showEmptyLines(1);
-					view.showMessage(TerminalColors.PURPLE_BOLD + "> Enter coordinates: " + TerminalColors.RESET);
+					view.showMessage(TerminalColors.PURPLE_BOLD + "> Enter coordinates or q to quit: " + TerminalColors.RESET);
 				}
  
 	
@@ -423,13 +425,13 @@ public class GameClient implements ClientProtocol {
 					view.showEmptyLines(2);
 					view.showMessageLn(TerminalColors.GREEN_BOLD +  "> Enemy missed your ship. It's your turn!" + TerminalColors.RESET);
 					view.showEmptyLines(1);
-					view.showMessage(TerminalColors.PURPLE_BOLD + "> Enter coordinates: " + TerminalColors.RESET);
+					view.showMessage(TerminalColors.PURPLE_BOLD + "> Enter coordinates or q to quit:" + TerminalColors.RESET);
 				} else {
 					myMove = false;
 					view.showEmptyLines(2);
 					view.showMessageLn(TerminalColors.RED_BOLD +  "> Enemy hit your ship. Wait for your move!" + TerminalColors.RESET);
 					view.showEmptyLines(1);
-					view.showMessage(TerminalColors.PURPLE_BOLD + "> Enter coordinates: " + TerminalColors.RESET);
+					view.showMessage(TerminalColors.PURPLE_BOLD + "> Enter coordinates or q to quit: " + TerminalColors.RESET);
 				}
 
 			}
