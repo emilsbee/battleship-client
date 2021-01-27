@@ -1,16 +1,14 @@
 package gameboards.tests;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import gameboards.ships.Battleship;
-import gameboards.ships.Carrier;
-import gameboards.ships.Destroyer;
-import gameboards.ships.Patrol;
-import gameboards.ships.Ship;
-import gameboards.ships.SuperPatrol;
+import constants.GameConstants;
+import gameboards.ships.*;
+import gameboards.GameBoard;
 
 
 /**
@@ -62,5 +60,58 @@ public class ShipsTest {
         assertEquals(5, destroyer.getAmount());
         assertEquals(8, superPatrol.getAmount());
         assertEquals(10, patrol.getAmount());
+    }
+
+    @Test
+    public void placeOnBoardTest() {
+        String[][] newBoard = new String[15][10];
+        GameBoard gameboard = new GameBoard(false);
+        
+        newBoard = gameboard.initialiseEmptyBoard(newBoard);
+
+        //placing a patrol ship and asserting the fields before and after placing
+        assertTrue(newBoard[1][1].equals(GameConstants.FIELD_TYPE_WATER));
+        patrol.placeOnBoard(newBoard, 1, 1);
+        assertTrue(newBoard[1][1].equals(GameConstants.FIELD_TYPE_PATROL));
+
+        //placing a super patrol ship and asserting the fields before and after placing
+        assertTrue(newBoard[5][1].equals(GameConstants.FIELD_TYPE_WATER));
+        assertTrue(newBoard[6][1].equals(GameConstants.FIELD_TYPE_WATER));
+        superPatrol.placeOnBoard(newBoard, 5, 1);
+        assertTrue(newBoard[5][1].equals(GameConstants.FIELD_TYPE_SUPER_PATROL_FRONT));
+        assertTrue(newBoard[6][1].equals(GameConstants.FIELD_TYPE_SUPER_PATROL_BACK));
+
+        //placing a destroyer ship and asserting the fields before and after placing
+        assertTrue(newBoard[6][2].equals(GameConstants.FIELD_TYPE_WATER));
+        assertTrue(newBoard[7][2].equals(GameConstants.FIELD_TYPE_WATER));
+        assertTrue(newBoard[8][2].equals(GameConstants.FIELD_TYPE_WATER));
+        destroyer.placeOnBoard(newBoard, 6, 2);
+        assertTrue(newBoard[6][2].equals(GameConstants.FIELD_TYPE_DESTROYER_FRONT));
+        assertTrue(newBoard[7][2].equals(GameConstants.FIELD_TYPE_DESTROYER_MID));
+        assertTrue(newBoard[8][2].equals(GameConstants.FIELD_TYPE_DESTROYER_BACK));
+        
+        //placing a battleship ship and asserting the fields before and after placing
+        assertTrue(newBoard[7][7].equals(GameConstants.FIELD_TYPE_WATER));
+        assertTrue(newBoard[8][7].equals(GameConstants.FIELD_TYPE_WATER));
+        assertTrue(newBoard[9][7].equals(GameConstants.FIELD_TYPE_WATER));
+        assertTrue(newBoard[10][7].equals(GameConstants.FIELD_TYPE_WATER));
+        battleship.placeOnBoard(newBoard, 7, 7);
+        assertTrue(newBoard[7][7].equals(GameConstants.FIELD_TYPE_BATTLESHIP_FRONT));
+        assertTrue(newBoard[8][7].equals(GameConstants.FIELD_TYPE_BATTLESHIP_FRONT_MID));
+        assertTrue(newBoard[9][7].equals(GameConstants.FIELD_TYPE_BATTLESHIP_BACK_MID));
+        assertTrue(newBoard[10][7].equals(GameConstants.FIELD_TYPE_BATTLESHIP_BACK));
+
+        //placing a carrier ship and asserting the fields before and after placing
+        assertTrue(newBoard[8][9].equals(GameConstants.FIELD_TYPE_WATER));
+        assertTrue(newBoard[9][9].equals(GameConstants.FIELD_TYPE_WATER));
+        assertTrue(newBoard[10][9].equals(GameConstants.FIELD_TYPE_WATER));
+        assertTrue(newBoard[11][9].equals(GameConstants.FIELD_TYPE_WATER));
+        assertTrue(newBoard[12][9].equals(GameConstants.FIELD_TYPE_WATER));
+        carrier.placeOnBoard(newBoard, 8, 9);
+        assertTrue(newBoard[8][9].equals(GameConstants.FIELD_TYPE_CARRIER_FRONT));
+        assertTrue(newBoard[9][9].equals(GameConstants.FIELD_TYPE_CARRIER_FRONT_MID));
+        assertTrue(newBoard[10][9].equals(GameConstants.FIELD_TYPE_CARRIER_MID));
+        assertTrue(newBoard[11][9].equals(GameConstants.FIELD_TYPE_CARRIER_BACK_MID));
+        assertTrue(newBoard[12][9].equals(GameConstants.FIELD_TYPE_CARRIER_BACK));
     }
 }
