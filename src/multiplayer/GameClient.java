@@ -50,13 +50,13 @@ public class GameClient implements ClientProtocol {
 	private GameBoard board;
 
 	// The move class that is put in a thread to get user input for moves
-	Move moveObj;
+	private Move moveObj;
 
 	// The thread in which moveObj is put in
-	Thread moveThread;
+	private Thread moveThread;
 
 	// Indicates whether it is currently my move
-	boolean myMove;
+	private boolean myMove;
 
 
 	/**
