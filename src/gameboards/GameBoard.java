@@ -238,7 +238,7 @@ public class GameBoard  {
         
          // Only checks if a ship sunk in the case that a ship was hit.
          // That's because there could be a case where player fires at a field
-         // that already has a sunk ship and the player should'nt receive a point for that.
+         // that already has a sunk ship and the player shouldn't receive a point for that.
         if (isHit) { 
             isSunk = hasSunk(x, y);
         } 
@@ -346,12 +346,12 @@ public class GameBoard  {
             } else if (fieldName.endsWith("FRONT_MID_HIT")) {
                 x1 = x-1;
                 x2 = x+3;
-            } else if (fieldName.endsWith("MID_HIT")) {
-                x1 = x-2;
-                x2 = x+2;
             } else if (fieldName.endsWith("BACK_MID_HIT")) {
                 x1 = x-3;
                 x2 = x+1;
+            } else if (fieldName.endsWith("MID_HIT")) {
+                x1 = x-2;
+                x2 = x+2;
             } else {
                 x1 = x-4;
                 x2 = x;

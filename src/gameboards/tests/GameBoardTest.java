@@ -42,10 +42,13 @@ public class GameBoardTest {
     @Test
     public void initialiseEmptyBoardTest() {
         String[][] newBoard = new String[15][10];
+
         newBoard = gameboard.initialiseEmptyBoard(newBoard);
+
         int counter = 0;
-        for(int i = 0; i < newBoard.length; i++) {
-            for (int j = 0; j < newBoard[i].length; j++){
+
+        for(int i = 0; i < GameConstants.BOARD_SIZE_X; i++) {
+            for (int j = 0; j < GameConstants.BOARD_SIZE_Y; j++){
                 assertTrue(newBoard[i][j].equals("WATER"));
                 counter++;
             }
@@ -58,6 +61,8 @@ public class GameBoardTest {
      */
     @Test
     public void generateBoardTest() {
+        
+        //counters for both type of field
         int waterCounter = 0;
         int shipCounter = 0;
 
@@ -102,8 +107,8 @@ public class GameBoardTest {
         int shipCounter = 0;
 
         //iterate over the whole board
-        for(int i = 0; i < newBoard.length; i++) {
-            for (int j = 0; j < newBoard[i].length; j++){
+        for(int i = 0; i < GameConstants.BOARD_SIZE_X; i++) {
+            for (int j = 0; j < GameConstants.BOARD_SIZE_Y; j++){
                 if(newBoard[i][j].equals("WATER")) {
                     waterCounter++;
                 }
@@ -145,8 +150,11 @@ public class GameBoardTest {
     @Test
     public void shipsOnBoardTest() {
         List<Ship> ships = gameboard.getShips();
+
         int[] shipsCounter = new int[5]; // counter array for: i-0 = Patrol, 1 = SuperPatrol, 2 = Destroyer, 3 = Battleship, 4 = Carrier
+
         int size; 
+
         for(Ship s : ships) { //iterate over the s ship in ships, and decide which ship it is to higher the counter
             size = s.getSize();
             switch(size) {
@@ -202,57 +210,139 @@ public class GameBoardTest {
         gameboard.addScore(false, true); //Did not hit a ship, but did sunk the ship. This should not add any points to the score as it should not be possible
         assertTrue(gameboard.getScore() == 3);
     }
-
+    /**
+     * Test the method makeMove(), which makes a move on the board
+     */
     @Test 
     public void makeMoveTest() {
 
+        //get the fieldname of point (2,3)
         String fieldname = board[2][3];
+
+        //assert this field has not been hit yet, because it is a new board with no boards yet
+        assertFalse(fieldname.endsWith(GameConstants.FIELD_TYPE_HIT_EXTENSION));
+
+        //make a move on hit on (2,3) it will update the field
         gameboard.makeMove(2, 3);
 
+        //get the fieldname of the point that has been fired at
         String fieldnameNew = board[2][3];
 
-        assertFalse(fieldname.endsWith(GameConstants.FIELD_TYPE_HIT_EXTENSION));
+        //assert that the new fieldname should be updated into a hit field
         assertTrue(fieldnameNew.endsWith(GameConstants.FIELD_TYPE_HIT_EXTENSION));
+    }
+
+    /**
+     * Test the method allShipsDestroyed() which check whether or not all the ships on the board have been hit & sunk
+     */
+    @Test 
+    public void allShipsDestroyedTest() {
 
         //iterate over the whole board
-        for(int i = 0; i < board.length; i++) {
-            for (int j = 0; j < board[i].length; j++){
-                if(board[i][j].equals(GameConstants.FIELD_TYPE_PATROL)) {
-                    gameboard.makeMove(i,j);
-                    assertTrue(board[i][j].equals(GameConstants.FIELD_TYPE_PATROL_HIT));
-                    assertTrue(gameboard.hasSunk(i,j));
+        for(int i = 0; i < GameConstants.BOARD_SIZE_X; i++) {
+            for (int j = 0; j < GameConstants.BOARD_SIZE_Y; j++) {
+                if(board[i][j].equals(GameConstants.FIELD_TYPE_PATROL)) { //if it is the patrol ship
+                    gameboard.makeMove(i,j); //make a move on that point (i,j)
+                    assertTrue(board[i][j].equals(GameConstants.FIELD_TYPE_PATROL_HIT)); //assert it has been hit
+
+                    assertTrue(gameboard.hasSunk(i,j)); //assert it has been sunk
                 }
-                else if(board[i][j].equals(GameConstants.FIELD_TYPE_SUPER_PATROL_FRONT)) {
+                else if(board[i][j].equals(GameConstants.FIELD_TYPE_SUPER_PATROL_FRONT)) { //if it is the first 'part' of the ship
                     gameboard.makeMove(i,j);
                     assertTrue(board[i][j].equals(GameConstants.FIELD_TYPE_SUPER_PATROL_FRONT_HIT));
-                    gameboard.makeMove(i,j+1);
+                    
+                    assertFalse(gameboard.allShipsDestroyed()); //assert that all ships have not been destroyed
+
+                    assertTrue(board[i+1][j].equals(GameConstants.FIELD_TYPE_SUPER_PATROL_BACK)); //assert it is the good part of the ship, and it has not been hit yet
+                    gameboard.makeMove(i+1,j); //make a move on the point after the first 'part' of the ship (i+1,j)
+                    assertTrue(board[i+1][j].equals(GameConstants.FIELD_TYPE_SUPER_PATROL_BACK_HIT));
+
                     assertTrue(gameboard.hasSunk(i,j));
+                    assertTrue(gameboard.hasSunk(i+1,j)); //assert is also returns true from a different part of the ship
                 }
                 else if(board[i][j].equals(GameConstants.FIELD_TYPE_DESTROYER_FRONT)) {
                     gameboard.makeMove(i,j);
                     assertTrue(board[i][j].equals(GameConstants.FIELD_TYPE_DESTROYER_FRONT_HIT));
-                    gameboard.makeMove(i,j+1);
-                    gameboard.makeMove(i,j+2);
+                                        
+                    assertFalse(gameboard.allShipsDestroyed()); //assert that all ships have not been destroyed
+
+                    assertTrue(board[i+1][j].equals(GameConstants.FIELD_TYPE_DESTROYER_MID));
+                    gameboard.makeMove(i+1,j);
+                    assertTrue(board[i+1][j].equals(GameConstants.FIELD_TYPE_DESTROYER_MID_HIT));
+                                        
+                    assertFalse(gameboard.allShipsDestroyed()); //assert that all ships have not been destroyed
+
+                    assertTrue(board[i+2][j].equals(GameConstants.FIELD_TYPE_DESTROYER_BACK));
+                    gameboard.makeMove(i+2,j);
+                    assertTrue(board[i+2][j].equals(GameConstants.FIELD_TYPE_DESTROYER_BACK_HIT));
+
                     assertTrue(gameboard.hasSunk(i,j));
+                    assertTrue(gameboard.hasSunk(i+1,j));
+                    assertTrue(gameboard.hasSunk(i+2,j));
                 }
                 else if(board[i][j].equals(GameConstants.FIELD_TYPE_BATTLESHIP_FRONT)) {
                     gameboard.makeMove(i,j);
                     assertTrue(board[i][j].equals(GameConstants.FIELD_TYPE_BATTLESHIP_FRONT_HIT));
-                    gameboard.makeMove(i,j+1);
-                    gameboard.makeMove(i,j+2);
-                    gameboard.makeMove(i,j+3);
+                                        
+                    assertFalse(gameboard.allShipsDestroyed()); //assert that all ships have not been destroyed
+
+                    assertTrue(board[i+1][j].equals(GameConstants.FIELD_TYPE_BATTLESHIP_FRONT_MID));
+                    gameboard.makeMove(i+1,j);
+                    assertTrue(board[i+1][j].equals(GameConstants.FIELD_TYPE_BATTLESHIP_FRONT_MID_HIT));
+                                        
+                    assertFalse(gameboard.allShipsDestroyed()); //assert that all ships have not been destroyed
+
+                    assertTrue(board[i+2][j].equals(GameConstants.FIELD_TYPE_BATTLESHIP_BACK_MID));
+                    gameboard.makeMove(i+2,j);
+                    assertTrue(board[i+2][j].equals(GameConstants.FIELD_TYPE_BATTLESHIP_BACK_MID_HIT));
+                                        
+                    assertFalse(gameboard.allShipsDestroyed()); //assert that all ships have not been destroyed
+                    
+                    assertTrue(board[i+3][j].equals(GameConstants.FIELD_TYPE_BATTLESHIP_BACK));
+                    gameboard.makeMove(i+3,j);
+                    assertTrue(board[i+3][j].equals(GameConstants.FIELD_TYPE_BATTLESHIP_BACK_HIT));
+
                     assertTrue(gameboard.hasSunk(i,j));
+                    assertTrue(gameboard.hasSunk(i+1,j));
+                    assertTrue(gameboard.hasSunk(i+2,j));
+                    assertTrue(gameboard.hasSunk(i+3,j));
                 }
                 else if(board[i][j].equals(GameConstants.FIELD_TYPE_CARRIER_FRONT)) {
                     gameboard.makeMove(i,j);
                     assertTrue(board[i][j].equals(GameConstants.FIELD_TYPE_CARRIER_FRONT_HIT));
-                    gameboard.makeMove(i,j+1);
-                    gameboard.makeMove(i,j+2);
-                    gameboard.makeMove(i,j+3);
-                    gameboard.makeMove(i,j+4);
+                                        
+                    assertFalse(gameboard.allShipsDestroyed()); //assert that all ships have not been destroyed
+
+                    assertTrue(board[i+1][j].equals(GameConstants.FIELD_TYPE_CARRIER_FRONT_MID));
+                    gameboard.makeMove(i+1,j);
+                    assertTrue(board[i+1][j].equals(GameConstants.FIELD_TYPE_CARRIER_FRONT_MID_HIT));
+                                        
+                    assertFalse(gameboard.allShipsDestroyed()); //assert that all ships have not been destroyed
+
+                    assertTrue(board[i+2][j].equals(GameConstants.FIELD_TYPE_CARRIER_MID));
+                    gameboard.makeMove(i+2,j);
+                    assertTrue(board[i+2][j].equals(GameConstants.FIELD_TYPE_CARRIER_MID_HIT));
+                                        
+                    assertFalse(gameboard.allShipsDestroyed()); //assert that all ships have not been destroyed
+
+                    assertTrue(board[i+3][j].equals(GameConstants.FIELD_TYPE_CARRIER_BACK_MID));
+                    gameboard.makeMove(i+3,j);
+                    assertTrue(board[i+3][j].equals(GameConstants.FIELD_TYPE_CARRIER_BACK_MID_HIT));
+                                        
+                    assertFalse(gameboard.allShipsDestroyed()); //assert that all ships have not been destroyed
+
+                    assertTrue(board[i+4][j].equals(GameConstants.FIELD_TYPE_CARRIER_BACK));
+                    gameboard.makeMove(i+4,j);
+                    assertTrue(board[i+4][j].equals(GameConstants.FIELD_TYPE_CARRIER_BACK_HIT));
+
                     assertTrue(gameboard.hasSunk(i,j));
+                    assertTrue(gameboard.hasSunk(i+1,j));
+                    assertTrue(gameboard.hasSunk(i+2,j));
+                    assertTrue(gameboard.hasSunk(i+3,j));
+                    assertTrue(gameboard.hasSunk(i+4,j));
                 }
             }
         }
+        assertTrue(gameboard.allShipsDestroyed()); //assert that all ships on the board have been sunk
     }
 }
