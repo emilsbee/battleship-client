@@ -21,7 +21,7 @@ import tui.TerminalColors;
  */
 public class Move implements Runnable {
     // To convert the char input to an integer
-    private static final String[] alphabet = { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o"};
+    public static final String[] alphabet = { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o"};
 
 
     // Scanner variable to get user input
@@ -35,6 +35,10 @@ public class Move implements Runnable {
 
     // The terminal view
     private GameClientTUI view;
+
+    public Move() {
+
+    }
 
     public Move(EnemyGameBoard enemyBoard, GameClient client, GameClientTUI view) {
         this.enemyBoard = enemyBoard;

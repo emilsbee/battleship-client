@@ -301,6 +301,13 @@ public class GameClient implements ClientProtocol {
 		return this.myMove;
 	}
 
+	/**
+	 * Getter for the client board
+	 * @return The client's board
+	 */
+	public GameBoard getBoard() {
+		return board;
+	}
 
 
 	@Override
