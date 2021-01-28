@@ -21,6 +21,7 @@ public class GameClientTUI {
 
     /**
      * Initialises the scanner
+     * @post ensures that in != null
      */
     public GameClientTUI() {
         this.in = new Scanner(System.in);
