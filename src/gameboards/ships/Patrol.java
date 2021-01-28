@@ -3,6 +3,7 @@ package gameboards.ships;
 /**
  * This class represents the patrols. It contains mostly information about the ship type. It is also used to 
  * place a patrol on a given board.
+ * @inv size >= 0, amount >= 0
  */
 public class Patrol implements Ship {
     // The ship size indicates the number of fields it takes up
@@ -20,16 +21,25 @@ public class Patrol implements Ship {
         PATROL
     }
 
+    /**
+     * {@inheritDoc}
+     */
 	@Override
 	public int getSize() {
 		return this.size;
 	}
 
+    /**
+     * {@inheritDoc}
+     */
 	@Override
 	public int getAmount() {
 		return this.amount;
 	}
 
+    /**
+     * {@inheritDoc}
+     */
 	@Override
 	public Ship placeOnBoard(String[][] board, int x, int y) {
         /* Place the ship on board */

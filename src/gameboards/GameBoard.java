@@ -22,6 +22,7 @@ import protocol.ProtocolMessages;
  * mentions that a method is for singleplayer only. This class keeps track of where each ship is placed and which fields have been shot. It can also encode the board so it could
  * be sent to the server.
  * TODO: Create an interface to cover the methods that are used both by the GameBoard and the EnemyGameBoard
+ * @inv score >= 0, ships != null, board != null
  */
 public class GameBoard  {
     // The score of this board
@@ -34,7 +35,7 @@ public class GameBoard  {
     private String[][] board;
 
     // Re-usable instance of Random
-    Random random;
+    private Random random;
     
     /**
      * Constructor that calls for a board creation based on the argument. Either 
@@ -61,6 +62,8 @@ public class GameBoard  {
 
     /**
      * Initialises, generates and sets a randomly created board. 
+     * @post ensures that a board is generated that is filled with the right amount of ships 
+     * and water fields.
      */
     public void generateBoard() {
         String[][] newBoard = new String[15][10];
@@ -77,14 +80,20 @@ public class GameBoard  {
     /**
      * Setter for a newly created board.
      * @param board the board to be set.
+     * @pre board != null
+     * @post ensures that the given board is set
      */
-    public void setBoard(String[][] board) {
-        this.board = board;
+    private void setBoard(String[][] board) {
+        if (board != null) {
+            this.board = board;
+        }
     }
 
     /**
      * Getter for the game board created.
      * @return the board.
+     * @pre board != null
+     * @post that a valid board is returned
      */
     public String[][] getBoard() {
         return this.board;
@@ -93,6 +102,8 @@ public class GameBoard  {
     /**
      * Getter for the score of this board.
      * @return the score of this board.
+     * @pre score >= 0
+     * @post ensures the correct score of this board is returned
      */
     public int getScore() {
         return this.score;
@@ -101,6 +112,8 @@ public class GameBoard  {
     /**
     * Getter for the list of ships that has been created and placed on the board
     * @return the List of ships 
+    * @pre List<Ship> != null
+    * @post ensures that ships the ship list is returned
     */
     public List<Ship> getShips(){
         return this.ships;
@@ -111,6 +124,8 @@ public class GameBoard  {
      * If true each of them contribute 1 point to the score.
      * @param isHit Indicates whether ship was hit
      * @param isSunk Indicates whether ship was sunk
+     * @pre score to be initialised.
+     * @post ensures that the score is correctly incremented 
      */
     public void addScore(boolean isHit, boolean isSunk) {
         if (isHit) {
@@ -125,6 +140,8 @@ public class GameBoard  {
      * Makes a move if the given field isn't already fired upon.
      * @param x The X coordinate of the move
      * @param y The Y coorindate of the move
+     * @pre board != null, x >= 0 && x < 15, y >= 0 && y < 10
+     * @post ensures that the x,y field is set to hit if not hit already
      */
     public void makeMove(int x, int y) {
         if (!board[x][y].endsWith(GameConstants.FIELD_TYPE_HIT_EXTENSION)) {
@@ -138,6 +155,8 @@ public class GameBoard  {
      * This method does that for the specific amount times indicated by the ship instance. 
      * @param ship The ship to be placed
      * @param board The board on which the ships are to be placed
+     * @pre ship != null, board != null
+     * @post ensures that the correct amount of ship is placed on the board if a space for them is found
      */
     public void findPlaceOnBoard(Ship ship, String[][] board) {
         for (int shipCount = 0; shipCount < ship.getAmount(); shipCount++) { // Iterates over the number of ships
@@ -164,6 +183,8 @@ public class GameBoard  {
      * @param shipSize The size of the ship to be checked
      * @param board The game board
      * @return Whether the ship fits on the board and doesn't overlap any other ships
+     * @pre board != null, x >= 0 && x < 15, y >= 0 && y < 10, shipSize < 15 && shipSize >= 0
+     * @post returns indication of whether the board will fit on the board rightwards from the given coordinates
      */
     public boolean doesFit(int x, int y, int shipSize, String[][] board) {
         if (x + (shipSize-1) < 15) { // Checks whether ship fits on board
@@ -184,6 +205,8 @@ public class GameBoard  {
      * Initialises a given board by setting all fields of it to the string WATER
      * @param board the board to be initalised with water fields
      * @return the initialised board.
+     * @pre board != null
+     * @post ensures that the given board is filled with "WATER"
      */
     public String[][] initialiseEmptyBoard(String[][] board) {
         for (int i = 0; i < 15; i++) {
@@ -200,6 +223,9 @@ public class GameBoard  {
      * through sockets.
      * @param board The String[][] board to be encoded.
      * @return A String representation of the String[][] board.
+     * @pre board != null
+     * @post ensures that the given board is converted to a string where each field is separated with ProtocolMessages.DELIMITER.
+     * The start of the string is always ProtocolMessages.CLIENTBOARD+ProtocolMessages.DELIMITER
      */
     public String encodeBoard(String[][] board) {
         String encodedBoard = ProtocolMessages.CLIENTBOARD;
@@ -218,11 +244,14 @@ public class GameBoard  {
 
 
     /**
-     * Called by the game instance to make a move on behalf of the opponent given x and y coordinates of the move.
+     * Called by the game instance to make a move on behalf of the opponent given x and y coordinates of the move so it must return the results of the move.
      * This is only for single player because in multiplayer the server would do this instead.
      * @param x The X coordinate of the move.
      * @param y The Y coordinate of the move.
      * @return Information about whether a ship was hit, whether that hit resulted in sinking the ship, and whether all ships have been destroyed.
+     * @pre x >= 0 && x < 15, y >= 0 && y < 10, board != null
+     * @post ensures that the move on those coordinates is made and results of that move are returned. Results indicate whether ship was hit, sunk and whether all ships are destroyed
+     * @post also ensures that if the move on those x,y coordinates was previously made, then the hit and sink will return false
      */
     public boolean[] singlePlayerMakeMove(int x, int y) {
         boolean[] update = new boolean[3];
@@ -253,6 +282,8 @@ public class GameBoard  {
      * Checks whether all ships have been destroyed on this board.
      * This is only for single player because in multiplayer the server would do this instead.
      * @return Whether all ships have been destroyed or not.
+     * @pre board != null
+     * @post ensures that returns true if all ship parts on the board have _HIT extension or in other words if all ships are destroyed
      */
     public boolean allShipsDestroyed() {
         boolean allShipsDestroyed = true;
@@ -278,6 +309,8 @@ public class GameBoard  {
      * @param x The X coordinate of the move.
      * @param y The Y coordinate of the move.
      * @return Whether a ship was sunk as a result of the move.
+     * @pre x >= 0 && x < 15, y >= 0 && y < 10, board != null
+     * @post ensures that it returns true in the case that the ship on given coordinates is sunk
      */
     public boolean hasSunk(int x, int y) {
         boolean hasSunk = true; // Indicator for whether ship was sunk

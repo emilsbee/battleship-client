@@ -9,6 +9,7 @@ import constants.GameConstants;
  * This class can perform moves on the board and validate a move, meaning check out whether that move hasn't already previously been made.
  * This class is used both when playing multiplayer and signleplayer.
  * TODO: Create an interface to cover the methods that are used both by the GameBoard and the EnemyGameBoard
+ * @inv score >= 0, board != null and board always contains one of the three possible field states (the constants)
  */
 public class EnemyGameBoard {
     // Possible states of the fields of this board
@@ -28,7 +29,7 @@ public class EnemyGameBoard {
      */
     public EnemyGameBoard() {
         board = new String[15][10];
-        board = initialiseEmptyBoard(board);
+        board = initialiseEmptyBoard();
         score = 0;
     }
 
@@ -37,6 +38,8 @@ public class EnemyGameBoard {
      * If true each of them contribute 1 point to the score.
      * @param isHit Indicates whether ship was hit
      * @param isSunk Indicates whether ship was sunk
+     * @pre score to be initialised.
+     * @post ensures that the score is correctly incremented 
      */
     public void addScore(boolean isHit, boolean isSunk) {
         if (isHit) {
@@ -50,6 +53,8 @@ public class EnemyGameBoard {
     /**
      * Getter for the score.
      * @return The score of this board.
+     * @pre score >= 0
+     * @post ensures correct score is returned
      */
     public int getScore() {
         return this.score;
@@ -58,6 +63,8 @@ public class EnemyGameBoard {
     /**
      * Getter for the game board created.
      * @return the board.
+     * @pre board != null
+     * @post ensures that the correct board is returned
      */
     public String[][] getBoard() {
         return this.board;
@@ -68,6 +75,8 @@ public class EnemyGameBoard {
      * @param x The x coordinate of the move
      * @param y The y coordinate ofthe move
      * @return Whether the move is valid
+     * @pre board != null 
+     * @post ensures the returned boolean indicates that x,y is on board and not already hit before 
      */
     public boolean isValidMove(int x, int y) {
         return (
@@ -86,6 +95,8 @@ public class EnemyGameBoard {
      * @param x X coordinate of the move.
      * @param y Y coordinate of the move.
      * @param isHit Indicates whether a ships was hit.
+     * @pre board != null, x >= 0 && x < 15, y >= 0 && y < 10
+     * @post ensures that a hit move is made on board correctly depending on what isHit indicates
      */
     public void makeMove(int x, int y, boolean isHit) {
         if (isHit) {
@@ -99,8 +110,10 @@ public class EnemyGameBoard {
      * Initialises a given board by setting all fields of it to the string WATER
      * @param board the board to be initalised with water fields
      * @return the initialised board.
+     * @pre board != null
+     * @post ensures that the returned board has all fields in the double array filled with "WATER"
      */
-    public String[][] initialiseEmptyBoard(String[][] board) {
+    public String[][] initialiseEmptyBoard() {
         for (int i = 0; i < GameConstants.BOARD_SIZE_X; i++) {
             for (int j = 0; j < GameConstants.BOARD_SIZE_Y; j++) {
                 board[i][j] = EnemyGameBoard.WATER;

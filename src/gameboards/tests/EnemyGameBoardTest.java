@@ -33,7 +33,7 @@ public class EnemyGameBoardTest {
     @Test
     public void initialiseEmptyBoardTest() {
         String[][] newBoard = new String[15][10];
-        newBoard = enemyGameBoard.initialiseEmptyBoard(newBoard);
+        newBoard = enemyGameBoard.initialiseEmptyBoard();
         int counter = 0;
         for(int i = 0; i < GameConstants.BOARD_SIZE_X; i++) {
             for (int j = 0; j < GameConstants.BOARD_SIZE_Y; j++){
