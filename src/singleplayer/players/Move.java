@@ -4,7 +4,6 @@ package singleplayer.players;
 import java.util.Scanner;
 
 // Internal imports
-import exceptions.ServerUnavailableException;
 import gameboards.EnemyGameBoard;
 import singleplayer.game.Game;
 import tui.GameClientTUI;
@@ -63,7 +62,6 @@ public class Move implements Runnable {
      * move you can enter coordinats. However, the move won't be sent to the server
      * because myMove variable in client is always updated about whose move it is.
      * If it user's move and user enters valid coordinates, then the move method is called on client. 
-     * @throws ServerUnavailableException
      * @pre view != null, game != null, enemyBoard != null, player != null
      * @post ensures that a valid move or exiting the program are achieved. 
      */
