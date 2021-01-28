@@ -1,4 +1,4 @@
-package protocol;
+package multiplayer;
 
 // Internal imports
 import exceptions.ProtocolException;

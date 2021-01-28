@@ -15,8 +15,6 @@ import exceptions.ServerUnavailableException;
 import exceptions.SocketCreationException;
 import gameboards.EnemyGameBoard;
 import gameboards.GameBoard;
-import protocol.ClientProtocol;
-import protocol.ProtocolMessages;
 import singleplayer.game.Game;
 import tui.GameClientTUI;
 import tui.TerminalColors;

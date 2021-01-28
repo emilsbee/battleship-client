@@ -7,7 +7,7 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import protocol.ProtocolMessages;
+import multiplayer.*;
 
 public class SimpleServer {
     public static final int PORT = 8888;

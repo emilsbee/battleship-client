@@ -1,4 +1,4 @@
-package protocol;
+package multiplayer;
 
 /**
  * Contains the strings that represent messages in the protocol.
