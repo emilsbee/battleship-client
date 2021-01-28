@@ -7,6 +7,10 @@ public class ServerUnavailableException extends Exception {
 
 	private static final long serialVersionUID = -1207009873596120108L;
 
+	/**
+	 * @pre msg != null
+	 * @post ensures that message is passed to super class
+	 */
 	public ServerUnavailableException(String msg) {
 		super(msg);
 	}

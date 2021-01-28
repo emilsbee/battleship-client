@@ -9,6 +9,7 @@ import constants.GameConstants;
 /**
  * This class is a TUI for the game client. Is prompts questions to the user and displays messages.
  * Also it has methods to print out player's board, the score and name and the enemy's board, score and name.
+ * @inv scanner != null
  */
 public class GameClientTUI {
 
@@ -18,7 +19,9 @@ public class GameClientTUI {
     // The letters to print on the game board
     private static final String[] alphabet = { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o"};
 
-    
+    /**
+     * Initialises the scanner
+     */
     public GameClientTUI() {
         this.in = new Scanner(System.in);
     }
@@ -28,6 +31,8 @@ public class GameClientTUI {
      * It keeps asking for the integer until a valid one is entered.
      * @param question The question be answered by the user.
      * @return The integer answer to the question.
+     * @pre question != null, in != null
+     * @post ensures that an actual integer is returned
      */
     public int getInt(String question) {
         int answer;
@@ -50,6 +55,8 @@ public class GameClientTUI {
      * Simple method to get a String input from the user given a certain question.
      * @param question The question to be answered by the user.
      * @return The answer to the question.
+     * @pre question != null, in != null
+     * @post enusres that a string response is returned 
      */
     public String getString(String question) {
         
@@ -63,6 +70,8 @@ public class GameClientTUI {
      * It keeps asking for the boolean until a valid one is entered.
      * @param question To be asked to the user
      * @return The boolean answer user provided
+     * @pre question != null, in != null
+     * @post ensures that a boolean response is returned
      */
     public boolean getBoolean(String question) {
 		while(true){
@@ -80,6 +89,7 @@ public class GameClientTUI {
     /**
      * Requests the game type: multiplayer or singleplayer until the user inputs a valid answer
      * @return The game type player chose m: multiplayer, s: singleplayer.
+     * @post ensures that one of the game types is returned m in the case of multiplayer and s in the case of singleplayer
      */
     public String getGameType() {
         String gameType = "";
@@ -97,6 +107,8 @@ public class GameClientTUI {
     /**
      * Simple method to more easily display messages in terminal
      * @param message The message to be displayed.
+     * @pre message != null
+     * @post ensures that a message on the same line is printed
      */
     public void showMessage(String message) {
 		System.out.print(message);
@@ -105,6 +117,8 @@ public class GameClientTUI {
     /**
      * Simple method to show some new line message to the user.
      * @param message to show to the user.
+     * @pre message != null
+     * @post ensures that a message on a new line is printed
      */
     public void showMessageLn(String message) {
         System.out.println(message);
@@ -114,6 +128,8 @@ public class GameClientTUI {
      * For better formatting and user experience often mutliple empty lines have to be 
      * printed so this method prints as many empty lines as told.
      * @param count The amount of empty lines to be printed.
+     * @pre count >= 1
+     * @post ensures that the specified amount of empty lines is printed
      */
     public void showEmptyLines(int count) {
         for (int i = 0; i < count; i++) {
@@ -125,6 +141,8 @@ public class GameClientTUI {
      * Printing the score and name of the player just before printing the board.
      * @param score The score of the player that needs to be displayed above the board
      * @param name The name of the player that needs to be displayed above the board
+     * @pre score >= 0, name != null, playerType != null
+     * @post ensures that the correctly formatted score with name is printed
      */
     public void printScore(int score, String name, String playerType) {
         showEmptyLines(2);
@@ -162,6 +180,8 @@ public class GameClientTUI {
     /**
      * Prints the given game board in terminal.
      * @param board the board to be printed.
+     * @pre board != null, score >= 0, name != null
+     * @post ensures that a board is correctly printed with the score banner
      */
     public void printBoard(String[][] board, int score, String name) {
 
@@ -368,6 +388,8 @@ public class GameClientTUI {
      * @param board The enemy's board
      * @param score The enemy's score
      * @param name The enemy's name
+     * @pre board != null, score >= 0, name != null
+     * @post ensures that the enemy board is correctly printed with the score banner
      */
     public void printEnemyBoard(String[][] board, int score, String name) {
 
@@ -529,6 +551,8 @@ public class GameClientTUI {
      * Prints specific lines for the board a specific amount of times.
      * @param code The code given as a parameter to see what kind of line it needs to be.
      * @param amount the amount of times it needs to be printed.
+     * @pre code != null, amount >=0
+     * @post ensures that the correct amount and color of lines are printed 
      */
     public void printBoardLine(String code, int amount){
         for(int i = 0; i < amount; i++){

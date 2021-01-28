@@ -25,6 +25,7 @@ import tui.TerminalColors;
  * This class represents the communication with the server. It sends and receives messages with/from the server. It also handles the incoming messages 
  * with the methods that are overriden from the ClientProtocol. The message handler methods use the TUI to show the user what has happened in the game
  * and also communicates with the players game board for game logic related matters. Mostly just creating a board and updating the board.
+ * @inv view != null, playerName != null
  */
 public class GameClient implements ClientProtocol {
 	// Socket for communication with the server
@@ -80,6 +81,10 @@ public class GameClient implements ClientProtocol {
 	 * @throws ServerUnavailableException If IO error occurs when communicating with the server.
 	 * @throws ProtocolException If there is a messup with a protocol message.
 	 * @throws IOException If a general IO error occurs not related to communcation with server.
+	 * @pre view != null
+	 * @post ensures that based on user input either singleplayer game is created or a multiplayer game is created 
+	 * by connecting to the server, sending handshake message and starting the listener for messages from server. In
+	 * the case that connection to server fails, user is notified.
 	 */                                             
 	public void setup() {
 		view.showMessageLn(TerminalColors.BLUE_BOLD + "> Welcome to the battleship game!" + TerminalColors.RESET);
@@ -135,6 +140,8 @@ public class GameClient implements ClientProtocol {
 	 * until a connection is established or until the user indicates to exit 
 	 * the program.
 	 * @throws ServerUnavailableException
+	 * @pre view != null, socket == null
+	 * @post ensures that an attempt is made to connect to the server using user enter host ip and port, if not succesfully will inform the user 
 	 */
 	public void createConnection() throws SocketCreationException {
 		clearConnection();
@@ -162,6 +169,7 @@ public class GameClient implements ClientProtocol {
 	 * Resets the serverSocket and In- and OutputStreams to null.
 	 * Always make sure to close current connections via closeConnection() 
 	 * before calling this method!
+	 * @post ensures that socket == null, in == null, out == null
 	 */
 	public void clearConnection() {
 		socket = null;
@@ -172,6 +180,8 @@ public class GameClient implements ClientProtocol {
 	/**
 	 * Closes the connection by closing the In- and OutputStreams, as 
 	 * well as the socket.
+	 * @pre in != null, out != null, socket != null, view != null
+	 * @post ensures that the socket and communication through it is closed. If fails user is informed.
 	 */
 	public void closeConnection() {
 		view.showMessageLn("Closing the connection...");
@@ -191,6 +201,8 @@ public class GameClient implements ClientProtocol {
 	 * The stream is then flushed.
 	 * @param message The message to send to the server.
 	 * @throws ServerUnavailableException if IO errors occurs.
+	 * @pre out != null, message != null
+	 * @post ensures that an attempt is made at sending the given message, if fails user is informed
 	 */
 	public void sendMessage(String message) throws ServerUnavailableException {
 		if (out != null) {
@@ -213,6 +225,9 @@ public class GameClient implements ClientProtocol {
 	 * {@link #handleCommand(String)} method.
 	 * @throws ServerUnavailableException if IO error occurs.
 	 * @throws ProtocolException if there is a messup with a protocol message.
+	 * @pre input != null
+	 * @post ensures that messages from the connected server will be received and forwarded to {@link #handleCommand(String)},
+	 * if reading fails user is notified.
 	 */
 	public void start() throws ServerUnavailableException, ProtocolException {
 		
@@ -235,6 +250,9 @@ public class GameClient implements ClientProtocol {
 	 * @param input The message from the server that is checked whether it's a valid protocol message. 
 	 * @throws ServerUnavailableException if IO error occurs.
 	 * @throws ProtocolException if there is a messup with a protocol message.
+	 * @pre input != null, view != null
+	 * @post ensures that if the input contains a correctly formatted protocol message, the appropriate handler 
+	 * methods of it will be called. If the input is partly correct protocol message the user is informed of what went wrong.
 	 */
 	public void handleCommand(String input) throws ServerUnavailableException, ProtocolException {
 		if (input.equals(ProtocolMessages.HANDSHAKE)) { // Handshake
@@ -296,6 +314,8 @@ public class GameClient implements ClientProtocol {
 	/**
 	 * Getter for myMove
 	 * @return Whether it is my move or not.
+	 * @pre myMove != null
+	 * @post ensures that correct information about whether or not it is the user's move is returned
 	 */
 	public boolean getMyMove() {
 		return this.myMove;
@@ -304,18 +324,30 @@ public class GameClient implements ClientProtocol {
 	/**
 	 * Getter for the client board
 	 * @return The client's board
+	 * @pre board != null
+	 * @post ensures that a proper game board is returned
 	 */
 	public GameBoard getBoard() {
 		return board;
 	}
 
 
+	/**
+	 * {@inheritDoc}
+	 * @pre playerName != null
+	 * @post ensures that an attempt will be made at sending the handshake message to the server given the player's name
+	 */
 	@Override
 	public void handleHello(String playerName) throws ServerUnavailableException {
 
 		sendMessage(ProtocolMessages.HANDSHAKE+ProtocolMessages.DELIMITER+playerName);
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 * @pre view != null
+	 * @post ensures that an attempt will be made at sending the handshake message to the server given the player's name
+	 */
 	@Override
 	public void nameExists() throws ServerUnavailableException {
 		view.showEmptyLines(1);
@@ -325,6 +357,12 @@ public class GameClient implements ClientProtocol {
 		handleHello(playerName);	
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * @pre view != null, enemyName != null
+	 * @post ensures that user will be informed of the enemy's name and both enemies (empty) and user's boards are printed. 
+	 * @post Also, ensures that an attempt is made at sendin the user's board to the server.
+	 */
 	@Override
 	public void enemyName(String enemyName) throws ServerUnavailableException {
 		view.showEmptyLines(1);
@@ -335,11 +373,21 @@ public class GameClient implements ClientProtocol {
 		clientBoard(board);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * @pre board != null
+	 * @post ensures that an attempt is made at sending the  encoded user's board
+	 */
 	@Override
 	public void clientBoard(GameBoard board) throws ServerUnavailableException {
 		sendMessage(board.encodeBoard(board.getBoard()));
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 * @pre view != null, whoGoesFirstName != null
+	 * @post ensures that the user is informed of whether or not it is their move
+	 */
 	@Override
 	public void gameSetup(String whoGoesFirstName) {
 		
@@ -355,6 +403,11 @@ public class GameClient implements ClientProtocol {
 		view.showMessage(TerminalColors.PURPLE_BOLD + "> Enter coordinates or q to quit: " + TerminalColors.RESET);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * @pre x >= 0 && x < 15, y >= 0 && y < 10, view != null
+	 * @post ensures that an attempt is made at sending user's move to the server or informing the user that it is not their move
+	 */
 	@Override
 	public void move(int x, int y) throws ServerUnavailableException {
 		if (myMove) {
@@ -366,6 +419,11 @@ public class GameClient implements ClientProtocol {
 		
 	}
 					
+	/**
+	 * {@inheritDoc}
+	 * @pre x >= 0 && x < 15, y >= 0 && y < 10, whoWentName != null, whoGoesNextName != null, view != null, enemyBoard != null, board != null
+	 * @post ensures that the user is informed of the previous move's results and of who is supposed to go next
+	 */
 	@Override
 	public void update(int x, int y, boolean isHit, boolean isSunk, boolean isLate, String whoWentName, String whoGoesNextName) {
 		if (isLate) { // If the update indicates that the move was late
@@ -439,6 +497,11 @@ public class GameClient implements ClientProtocol {
 		}
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 * @pre winnerName != null, view != null
+	 * @post ensures that the user is informed of why the game ended
+	 */
 	@Override
 	public void gameOver(String winnerName, boolean winType) {
 		if (winType) { // If end of game was reached normally
@@ -469,7 +532,11 @@ public class GameClient implements ClientProtocol {
 		view.showEmptyLines(1);
 		view.showMessage("Type q to exit game: ");
     }
-    
+	
+	/**
+	 * {@inheritDoc}
+	 * @post ensures that an attempt is made at sending exit messag to the server
+	 */
     @Override
     public void sendExit() throws ServerUnavailableException {
 		sendMessage(ProtocolMessages.EXIT);

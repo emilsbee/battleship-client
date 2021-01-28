@@ -20,13 +20,14 @@ import tui.TerminalColors;
  * user can input commands at any point, for example q to quit the game. It also allows to easily display any other messages in terminal 
  * while still allowing the user to enter commands. This thread is started only after the singleplayer game has begun.
  * TODO: Converge this class with the one in client package
+ * @inv game != null, view != null, enemyBoard != null, player != null
  */
 public class Move implements Runnable {
     // To convert the char input to an integer
     private static final String[] alphabet = { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o"};
 
     // Scanner variable to get user input
-    Scanner scanner;
+    private Scanner scanner;
 
     // Enemies game board
     private EnemyGameBoard enemyBoard;
@@ -40,7 +41,15 @@ public class Move implements Runnable {
     // The game instance
     private Game game;
 
-    // Initialises the move 
+    /**
+     * 
+     * @param enemyBoard The empty enemy's board
+     * @param player The Human player instance
+     * @param view The TUI
+     * @param game The game isntance
+     * @pre enemyBoard != null, player != null, view != null, game != null
+     * @post ensures that enemyBoard, player, view and game are initialised
+     */
     public Move(EnemyGameBoard enemyBoard, HumanPlayer player, GameClientTUI view, Game game) {
         this.enemyBoard = enemyBoard;
         this.player = player;
@@ -55,6 +64,8 @@ public class Move implements Runnable {
      * because myMove variable in client is always updated about whose move it is.
      * If it user's move and user enters valid coordinates, then the move method is called on client. 
      * @throws ServerUnavailableException
+     * @pre view != null, game != null, enemyBoard != null, player != null
+     * @post ensures that a valid move or exiting the program are achieved. 
      */
     public void getMove()  {
         boolean validMove = false; // Indicator for whether a move is valid
@@ -132,6 +143,8 @@ public class Move implements Runnable {
      * Get the x coordinate as number from the letter that user inputs
      * @param letter the letter to check 
      * @return -1 if the letter isn't a valid input for a move, else the respective x value on the board
+     * @pre letter ! null
+     * @post ensures that the proper index of the letter from the alphabet is array or -1 if the letter aint in there
      */
     public int indexOfLetterInAlphabet(String letter) {
         if (letter.length() != 1) { 
@@ -155,6 +168,8 @@ public class Move implements Runnable {
      * Promopts user the question for coordinates.
      * @param question The question for user to answer.
      * @return User's input.
+     * @pre question != null, view != null
+     * @post ensures that a String response is returned that was entered by the user
      */
     public String getString(String question) {
         scanner = new Scanner(System.in);
@@ -165,6 +180,8 @@ public class Move implements Runnable {
 
     /**
      * The thread loop that keeps asking for user input until user indicates to quit.
+     * @pre view != null
+     * @post ensures that this thread will always ask user for input eithe coordinates or to exit program 
      */
 	@Override
 	public void run() {

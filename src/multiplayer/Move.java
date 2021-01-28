@@ -18,6 +18,7 @@ import tui.TerminalColors;
  * it can't be. Hence, it just always asks for input. Important to note that this thread is only started once a client has succesfully connected to the server
  * and a game has begun
  * TODO: Converge this class with the one in players package. 
+ * @inv client != null, view != null, enemyBoard != null
  */
 public class Move implements Runnable {
     // To convert the char input to an integer
@@ -25,7 +26,7 @@ public class Move implements Runnable {
 
 
     // Scanner variable to get user input
-    Scanner scanner;
+    private Scanner scanner;
 
     // Enemies game board
     private EnemyGameBoard enemyBoard;
@@ -40,6 +41,12 @@ public class Move implements Runnable {
 
     }
 
+    /**
+     * @param enemyBoard The enemy board to be initialised
+     * @param client The game client to be initialised
+     * @param view The TUI to be initialised
+     * @pre view != null, client != null, enemyBoard != null
+     */
     public Move(EnemyGameBoard enemyBoard, GameClient client, GameClientTUI view) {
         this.enemyBoard = enemyBoard;
         this.client = client;
@@ -53,6 +60,8 @@ public class Move implements Runnable {
      * because myMove variable in client is always updated about whos move it is.
      * If it user's move and user enters valid coordinates, then the move method is called on client. 
      * @throws ServerUnavailableException
+     * @pre view != null, client != null, enemyBoard != null
+     * @post ensures that a valid move or exiting the program are achieved. 
      */
     public void getMove() throws ServerUnavailableException {
 
@@ -122,6 +131,8 @@ public class Move implements Runnable {
      * Get the x coordinate as number from the letter that user inputs.
      * @param letter the letter to check 
      * @return -1 if the letter isn't a valid input for a move, else the respective x value on the board
+     * @pre letter ! null
+     * @post ensures that the proper index of the letter from the alphabet is array or -1 if the letter aint in there
      */
     public int indexOfLetterInAlphabet(String letter) {
         if (letter.length() != 1) { 
@@ -145,6 +156,8 @@ public class Move implements Runnable {
      * Promopts user the question for coordinates.
      * @param question The question for user to answer.
      * @return User's input.
+     * @pre question != null, view != null
+     * @post ensures that a String response is returned that was entered by the user
      */
     public String getString(String question) {
         scanner = new Scanner(System.in);
@@ -155,6 +168,8 @@ public class Move implements Runnable {
 
     /**
      * The thread loop that keeps asking for user input until user indicates to quit.
+     * @pre view != null
+     * @post ensures that this thread will always ask user for input eithe coordinates or to exit program 
      */
 	@Override
 	public void run() {

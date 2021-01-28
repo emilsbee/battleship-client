@@ -14,6 +14,7 @@ import tui.TerminalColors;
  * This game represents a game for singleplayer. It is not used when playing multiplayer as this would be on the server side in that case. 
  * The game basically keeps track of whos move it is, how many points each player has and whether the game should end or not. It also requests
  * moves from each of the players when it's their turn to go. It runs on it's own thread as that's where the 5 minute game loop is.
+ * @inv humanPlayer != null, computerPlayer != null, humanPlayerPoints >= 0, computerPlayerPoints >= 0, view != null
  */
 public class Game implements Runnable {
     // The constants to tell apart the human and computer player
@@ -33,7 +34,7 @@ public class Game implements Runnable {
     private String currentMove;
 
     // Re-usable instance of random
-    Random random;
+    private Random random;
 
     // The terminal view to display messages and show prompts to user
     private GameClientTUI view;
@@ -49,6 +50,8 @@ public class Game implements Runnable {
      * calling {@link #startGame()} method to start the game. 
      * @param playerName The name of the player that will play against the computer.
      * @param view The TUI.
+     * @pre playerName != null, view != null
+     * @post ensures that humanPlayer, computerPlayer, random, view are initialised. And that humanPlayerPoints, computerPlayerPoints == 0. Finally, ensures that game is started.
      */
     public Game(String playerName, GameClientTUI view) {
         humanPlayer = new HumanPlayer(playerName, this, view);
@@ -66,6 +69,15 @@ public class Game implements Runnable {
     // It iterates every 1 second since there is no need
     // to be accurace to milliseconds. If the game is finished because 5 minutes are up
     // meaning thread wasn't interrupted, then the thread informs the human player about what the end result is.
+    /**
+     *  The game thread loop that is stuck in a while loop until 5 minutes are up. 
+     * It iterates every 1 second since there is no need
+     * to be accurace to milliseconds. If the game is finished because 5 minutes are up
+     * meaning thread wasn't interrupted, then the thread informs the human player about what the end result is.
+     * @pre humanPlayer != null
+     * @post ensures that it is decided which player goes first, and that a 5 minute game loop is started
+     * after which the human player is informed of the results of the game.
+     */
     @Override
     public void run() {
         decideWhoStarts(); // Randomly chooses who goes first and sets the currentMove variable accordingly
@@ -99,6 +111,7 @@ public class Game implements Runnable {
 
     /**
      * Starts the game loop thread.
+     * @post ensures that the game loop thread is started.
      */
     public void startGame() {
         gameThread = new Thread(this);
@@ -112,6 +125,9 @@ public class Game implements Runnable {
      * each players points. If the results after a move indicate that all ships have been destroyed it stops 
      * the game by interrupting the game loop thread and informs both players about the result of the game.
      * Also, after each move it requests the respective player to make a move.
+     * @pre x >= 0 && x < 15, y >= 0 && y < 10, currentMove != null, humanPlayer != null, computerPlayer != null, view != null, gameThread != null
+     * @post ensures that the move is made and both players are informed of the results of the move and about who goes next. Also ensure
+     * that if all ships are destroyed by one of the players the gameThread is interrputed and human player is informed of who won.
      */
     public void makeMove(int x, int y, boolean isLate) {
         if (!gameEnded) {
@@ -218,6 +234,7 @@ public class Game implements Runnable {
 
     /**
      * @return Whether the game has ended.
+     * @post ensures that correct information about whether game has ended is returned
      */
     public boolean hasGameEnded() {
         return gameEnded;
@@ -225,6 +242,8 @@ public class Game implements Runnable {
 
     /**
      * Randomly decides which player should start and requests a move from that player.
+     * @pre random != null, computerPlayer != null, humanPlayer != null
+     * @post ensures that who goes first is randomly chosen and respective player is informed of that
      */
     public void decideWhoStarts() {
         int whoStarts = random.nextInt(2);
@@ -242,6 +261,8 @@ public class Game implements Runnable {
     /**
      * Getter for how many point the human player has.
      * @return The amount of points that human player has.
+     * @pre humanPlayerPoints >= 0
+     * @post ensures that the human player points are returned
      */
     public int getHumanPlayerPoints() {
         return this.humanPlayerPoints;
@@ -250,6 +271,8 @@ public class Game implements Runnable {
     /**
      * Getter for how many point the computer player has.
      * @return The amount of points that computer player has.
+     * @pre computerPlayerPoints >= 0
+     * @post ensures that the computer player points are returned
      */
     public int getComputerPlayerPoints() {
         return this.computerPlayerPoints;
@@ -258,6 +281,8 @@ public class Game implements Runnable {
     /**
      * To check whether it is the human players move
      * @return Whether it is the human players move.
+     * @pre currentMove != null
+     * @post ensures that it returns whether or not it is the human player's move
      */
     public boolean isHumanPlayersMove() {
         return currentMove.equals(Game.HUMAN_PLAYER);
